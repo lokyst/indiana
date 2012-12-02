@@ -1,6 +1,429 @@
 Indy = {}
 
 -- Some useful generic functions
+local tableOfArtifactAchievements = {
+		c08FB7D2A79AA293E = {
+			["Already-used Treasure Map"] = true,
+			["Aqua Flora"] = true,
+			["Discarded Armor Pieces"] = true,
+			["Discarded Bottles, Vials, and Flasks"] = true,
+			["Discarded Weapons"] = true,
+			["Dormant Runeshards"] = true,
+			Driftwood = true,
+			["Empty Treasure Chests"] = true,
+			["Exotic Aqua Flora"] = true,
+			["Fish Scales"] = true,
+			["Keys to Nothing"] = true,
+			["Moldy Tomes"] = true,
+			["Mysterious Crystals"] = true,
+			["Rings That Were Once Lost"] = true,
+			["Shiny Pebbles"] = true
+		},
+		c0BB107D26CD43321 = {
+			["An Analysis of Goblin Titles and Aliases"] = true,
+			["Ascended Guardians"] = true,
+			["Brougan Grote"] = true,
+			["Codex Elementalism"] = true,
+			["Divine Landing"] = true,
+			["Food of Silverwood"] = true,
+			["Hazing Committee Supplies"] = true,
+			["High Elven Culture"] = true,
+			["History of the High Elves"] = true,
+			["Hylas and Shyla"] = true,
+			["Jerome Drift"] = true,
+			Overwatch = true,
+			["Prince Hylas Aelfwar"] = true,
+			["Quicksilver College"] = true,
+			Silverwood = true,
+			Tavril = true,
+			["The Arboreal War"] = true,
+			["The Great Betrayal"] = true,
+			["The Holy City"] = true,
+			["The Theology of the Vigil"] = true
+		},
+		c10F77141903E55AC = {
+			["Cyclops Gladiator Gear"] = true,
+			["Emberlord Ereetu"] = true,
+			["Fossils of the Droughtlands"] = true,
+			["Frontier Foods"] = true,
+			["Gambler's Marks"] = true,
+			["Helena Brass's Leaflets"] = true,
+			["Kobold Creation Story"] = true,
+			["Lantern Hook"] = true,
+			["Mister Opal's Guide to Humans"] = true,
+			["Rorf Collection; Awesome Reward"] = true,
+			["The Bogling and the Kobold"] = true,
+			["The Convocation"] = true,
+			["The Eldritched Civilization of the Eth"] = true,
+			["To Be a God"] = true,
+			["Wanton Tribe Trophies"] = true,
+			["Well Thought Out Plans of Victory"] = true
+		},
+		c11EBFDB32253AA12 = {
+			["Bahmi Tribe Symbols"] = true,
+			["Companion Sashes"] = true,
+			["Dargal the Pyromancer"] = true,
+			["Fortune's Shore"] = true,
+			["Gambler's Equipment"] = true,
+			["Khaliti Jewel Work"] = true,
+			["Lost Treasure Maps"] = true,
+			["Scales of Laethys"] = true,
+			["Stormlord Casimir"] = true,
+			["Sylver's Schematics"] = true,
+			["Tam Daggerborn"] = true,
+			["The Big Book of Eth Conspiracy"] = true,
+			["The City-State of Redoubt"] = true,
+			["The Sorcerer-Kings"] = true,
+			["Thontic, God of Mystery"] = true,
+			["Vaiyuu Wool"] = true
+		},
+		c1496CE24B30E62D5 = {
+			["Droughtlands Fishing Trophies"] = true,
+			["Ember Isle Fishing Trophies"] = true,
+			["Freemarch Fishing Trophies"] = true,
+			["Gloamwood Fishing Trophies"] = true,
+			["Iron Pine Peak Fishing Trophies"] = true,
+			["Moonshade Highlands Fishing Trophies"] = true,
+			["Scarlet Gorge Fishing Trophies"] = true,
+			["Scarwood Reach Fishing Trophies"] = true,
+			["Shimmersand Fishing Trophies"] = true,
+			["Silverwood Fishing Trophies"] = true,
+			["Stillmoor Fishing Trophies"] = true,
+			["Stonefield Fishing Trophies"] = true
+		},
+		c20E245864E8CB7D7 = {
+			["Crops of Freemarch"] = true,
+			["Fish of Solace"] = true,
+			["Freemarch Warden Gear"] = true,
+			["Keys of the Iron Fortress"] = true,
+			["Liberation of the March"] = true,
+			["Remains of the Mire"] = true,
+			["Scrolls of Eliam"] = true,
+			["Telaran Coins"] = true
+		},
+		c22B15A695E27E319 = {
+			["Curses of Gloamwood"] = true,
+			["Darkening Deeps"] = true,
+			["Delilath the Hag"] = true,
+			["Family Crests of Gloamwood"] = true,
+			Gloamwood = true,
+			["Gloamwood Horrors"] = true,
+			["Love in the Age of the Shade"] = true,
+			Oakheart = true,
+			["Oswald's Notes"] = true,
+			["Shadefallen Keep"] = true,
+			["Tales of the Forest"] = true,
+			["The Gedlo Conclave"] = true,
+			["The Sanctuary Guard"] = true,
+			["The Solemn Family"] = true,
+			["Tintan's Snake Oil"] = true,
+			["Tools of the Forest"] = true
+		},
+		c280046F1395370DF = {
+			["Aelfwar Tokens"] = true,
+			["Cat Gut Accessories"] = true,
+			["Commander Kain"] = true,
+			["Doctor Visek"] = true,
+			["Ironwood Boughs"] = true,
+			["Kain's Command"] = true,
+			["Keenblade Manual"] = true,
+			["Life Bomb Fragments"] = true,
+			["Lord's Hall"] = true,
+			["Lumber Saws"] = true,
+			["On the Heavens"] = true,
+			["Our Aelfwar Benefactors"] = true,
+			["Relics of Carwin Mathos"] = true,
+			["Remains of Granitewood Crossing"] = true,
+			["Shatterbone Possessions"] = true,
+			["Weapons of War"] = true
+		},
+		c2A729BB0823333B8 = {
+			["Abyssal Summoning Implements"] = true,
+			["Brother Jebiah"] = true,
+			["Buccaneer Articles"] = true,
+			["Fae Dust"] = true,
+			["Fezziled's 100 Ways to Cook a Fae"] = true,
+			Gorvaht = true,
+			Hammerknell = true,
+			["Intact Runebound Vessels"] = true,
+			["Last Days of Hammerknell"] = true,
+			["Moonshade Crofter Deeds"] = true,
+			["Moonshade Highlands"] = true,
+			["Proper Parenting Techniques By Eustace Green"] = true,
+			["Rune King Molinar"] = true,
+			["Runebound Accessories"] = true,
+			["Story of Brother Damon"] = true,
+			["The Dwarves of Moonshade"] = true,
+			["Three Springs"] = true,
+			["Tidelord Brenin"] = true
+		},
+		c30D8D0D5876EE950 = {
+			["A Bahmi in the North"] = true,
+			["Charms of Iron Pine"] = true,
+			["Commander Calthyx"] = true,
+			["Ice Statues"] = true,
+			["Iron Pine Peak"] = true,
+			["Orders of Rahn Chuluun"] = true,
+			["Relics of Crucia's Last Battle"] = true,
+			["Scriptkeeper Chekharoth's Scrolls"] = true,
+			["Storm Legion Decorations"] = true,
+			["Tabitha Leighton"] = true,
+			["The Art of Combat"] = true,
+			["The First Oaths of the Icewatch"] = true,
+			["The Icewatch"] = true,
+			["The Labors of Thedeor"] = true,
+			["Thedeor's Sword"] = true,
+			Whitefall = true,
+			["Whitefall Recruitment Letters"] = true
+		},
+		c329C9B02946B2D29 = {
+			["Emberlord Ereetu"] = true,
+			["Kobold Creation Story"] = true,
+			["Mister Opal's Guide to Humans"] = true,
+			["Rorf Collection; Awesome Reward"] = true,
+			["The Bogling and the Kobold"] = true,
+			["Wanton Tribe Trophies"] = true,
+			["Well Thought Out Plans of Victory"] = true
+		},
+		c490636CB6B61DCE0 = {
+			["Aelfwar Tokens"] = true,
+			["Life Bomb Fragments"] = true,
+			["On the Heavens"] = true,
+			["Our Aelfwar Benefactors"] = true,
+			["Remains of Granitewood Crossing"] = true
+		},
+		c4C06352A998B34FD = {
+			["Bahmi Tribe Symbols"] = true,
+			["Companion Sashes"] = true,
+			["Fortune's Shore"] = true,
+			["Gambler's Equipment"] = true,
+			["Khaliti Jewel Work"] = true,
+			["The City-State of Redoubt"] = true,
+			["Vaiyuu Wool"] = true
+		},
+		c539E1EAB7D3381FF = {
+			["Abyssal Ritual Jars"] = true,
+			["Cast Off Prototypes"] = true,
+			["Crops of Freemarch"] = true,
+			["Deep Master Tomes"] = true,
+			["Fish of Solace"] = true,
+			["Freemarch Warden Gear"] = true,
+			["Journal of March Warden Denegar"] = true,
+			["Kelari Idols"] = true,
+			["Keys of the Iron Fortress"] = true,
+			["Kira's Tools of the Trade"] = true,
+			["Liberation of the March"] = true,
+			["Orphiel's Planar Charts"] = true,
+			["Relics of Freemarch"] = true,
+			["Remains of the Mire"] = true,
+			["Scrolls of Eliam"] = true,
+			["Technician Tools"] = true,
+			["Telaran Coins"] = true,
+			["The Crossing"] = true,
+			["The Day the Rifts Came"] = true,
+			["The Port of Scion"] = true
+		},
+		c54E9B2BCB7E1986F = {
+			["Maelforge's Imprisonment"] = true,
+			["The Fallen Son"] = true,
+			["The Farclan Pilgrimage"] = true,
+			["The Keepers of the Flame"] = true,
+			["War of the Fractured Plain"] = true
+		},
+		c562877A7AE21F8B5 = {
+			Hammerknell = true,
+			["Intact Runebound Vessels"] = true,
+			["Last Days of Hammerknell"] = true,
+			["Rune King Molinar"] = true,
+			["Runebound Accessories"] = true,
+			["The Dwarves of Moonshade"] = true
+		},
+		c5B0D3CF64DEA168B = {
+			["Angdralthus the Lich"] = true,
+			["Construct Apparatuses"] = true,
+			["Demonic Binding Reagents"] = true,
+			["Dime Novels"] = true,
+			["Fire Idols"] = true,
+			["Quarry Rat Instruments"] = true,
+			["Scarlet Gorge"] = true,
+			["The Court of Suffering"] = true,
+			["The Golden Fable"] = true,
+			["The Gorge"] = true,
+			["The Grimoire of Chaos"] = true
+		},
+		c5B37AD517BEEF0B4 = {
+			["High Elven Culture"] = true,
+			["History of the High Elves"] = true,
+			["Hylas and Shyla"] = true,
+			Overwatch = true,
+			["Prince Hylas Aelfwar"] = true,
+			Tavril = true,
+			["The Arboreal War"] = true,
+			["The Great Betrayal"] = true
+		},
+		c5D59E7C1980176B2 = {
+			["Demonic Binding Reagents"] = true,
+			["Fire Idols"] = true,
+			["The Court of Suffering"] = true
+		},
+		c5E26FB3A9927DADF = {
+			["Relics of Crucia's Last Battle"] = true,
+			["Scriptkeeper Chekharoth's Scrolls"] = true,
+			["Storm Legion Decorations"] = true,
+			["The First Oaths of the Icewatch"] = true,
+			["Whitefall Recruitment Letters"] = true
+		},
+		c688F3C1FD088A1A8 = {
+			["Curses of Gloamwood"] = true,
+			["Delilath the Hag"] = true,
+			["Family Crests of Gloamwood"] = true,
+			["Love in the Age of the Shade"] = true,
+			["Oswald's Notes"] = true,
+			["Shadefallen Keep"] = true
+		},
+		c783753ABC4223791 = {
+			["Caer Mathos Royal Relics"] = true,
+			["Mathosian Delicacies"] = true,
+			["Mathosian Families"] = true,
+			["Mathosian Pottery"] = true,
+			["Protective Talismans"] = true,
+			["Richter, Lord of Belmont"] = true
+		},
+		c7929CAEEC87A39FE = {
+			["Aedraxis Mathos, Tyrant"] = true,
+			["Aelfwar Regrets"] = true,
+			["Books of Black Magic"] = true,
+			["Caer Mathos Royal Relics"] = true,
+			["Endless Beginnings"] = true,
+			["Endless Necromancer Skulls"] = true,
+			["Forgotten Items of the Ascended"] = true,
+			["Mathosian Delicacies"] = true,
+			["Mathosian Families"] = true,
+			["Mathosian Pottery"] = true,
+			["Protective Talismans"] = true,
+			["Relics of Greenscale's Tamers"] = true,
+			["Richter, Lord of Belmont"] = true,
+			Stillmoor = true,
+			["The Kingdom of Mathosia"] = true,
+			["The Rise and Fall of Mathosia"] = true,
+			["The Second Fall of the Eth"] = true
+		},
+		c7E1C4E84600ED937 = {
+			Abandoned = true,
+			Anthousa = true,
+			["Bahralt's Favor"] = true,
+			["Borrin's Travel Supplies"] = true,
+			["Elven Affects"] = true,
+			["Farclan Relics"] = true,
+			["For Maelforge"] = true,
+			["Fort Zarnost"] = true,
+			["Goblins of Ember Isle"] = true,
+			["Karris's Correspondences"] = true,
+			["Maelforge's Imprisonment"] = true,
+			["Mount Carcera"] = true,
+			["Native Monsters of Ember Isle"] = true,
+			["Spirit Tokens"] = true,
+			["Sylver's Ember Isle Research"] = true,
+			["Symbols of Atia"] = true,
+			["The Fallen Son"] = true,
+			["The Farclan Pilgrimage"] = true,
+			["The Keepers of the Flame"] = true,
+			["The Pyrkari"] = true,
+			["War of the Fractured Plain"] = true,
+			["Weapons of Ember Isle"] = true
+		},
+		cFAFA45B6702B5600 = {
+			["Burial Rites of the Caretakers"] = true,
+			["Caretaker Officer Badges"] = true,
+			["Caretaker Saboteur's Gear"] = true,
+			["Caretaker Wardobe"] = true,
+			["Storm Legion Contraband"] = true,
+			["Storm Legion Technology Schematics"] = true,
+			["Storm Legion Weapons"] = true
+		},
+		cFBA6E10F1BFFAD4E = {
+			["Arlan Merkur's Battle Entries"] = true,
+			["Arlan Merkur's Personal Effects"] = true,
+			["Burial Rites of the Caretakers"] = true,
+			["Caretaker Officer Badges"] = true,
+			["Caretaker Saboteur's Gear"] = true,
+			["Caretaker Wardobe"] = true,
+			["Commander Dysolt's Personal Effects "] = true,
+			["Doctorandus Willhelm Zoetl's Medical Journal"] = true,
+			["General Blythe's Battle Plans"] = true,
+			Morban = true,
+			["Regions of Dusken"] = true,
+			["Shaper Tools of the Trade"] = true,
+			["Shaper's Twisted Artwork"] = true,
+			["Shapers Artistic Fervor"] = true,
+			["Storm Grafted Wreckage"] = true,
+			["Storm Legion Contraband"] = true,
+			["Storm Legion Technology Schematics"] = true,
+			["Storm Legion Weapons"] = true,
+			["Storm Legion's Occult"] = true,
+			["The Elder Shapers of Dusken"] = true,
+			["The Goddess of Fate"] = true
+		},
+		cFD1409459E5E68B9 = {
+			["Ancient Brevanic Technology"] = true,
+			["Brevanic Relics"] = true,
+			["Dusken Delightful Recipes"] = true,
+			["Dusken Townsfolk Mementos"] = true,
+			["Krahzael Discarded Predictions"] = true,
+			["Krahzael's Fated Charms"] = true,
+			["Krahzael's Influence"] = true
+		},
+		cFDB0C99E79BFC95F = {
+			["Aedraxis's Immortal Death"] = true,
+			["Ancient Brevanic Technology"] = true,
+			["Beast Victims’ Remains"] = true,
+			["Brevanic Relics"] = true,
+			["Caretaker Survival Kit"] = true,
+			["Caretaker Trappings"] = true,
+			["Crucia's Psychic Presence"] = true,
+			["Dusken Delightful Recipes"] = true,
+			["Dusken Townsfolk Mementos"] = true,
+			["Ezael's Nicknacks"] = true,
+			["Flora of Dusken"] = true,
+			["Fungus of Dusken"] = true,
+			["Kain's Mementos"] = true,
+			["Krahzael Discarded Predictions"] = true,
+			["Krahzael's Fated Charms"] = true,
+			["Krahzael's Influence"] = true,
+			["Nutrients of the Overseer"] = true,
+			Seratos = true,
+			["The Wild Hunt"] = true,
+			["Thoughts of the Overseer"] = true,
+			["Torath the Wretched"] = true
+		},
+		cFE15195276543CC1 = {
+			["Air Elemental Mementos"] = true,
+			["Brevane Biographies"] = true,
+			["Brevane Heraldry"] = true,
+			["Brevane Histories"] = true,
+			["Captain Frigain’s Diary"] = true,
+			["Infinity Gate Architectural Plans"] = true,
+			["Infinity Gate Opposition Flyers"] = true,
+			["Infinity Gate Pieces"] = true,
+			["Legends of Crucia"] = true,
+			["Nixtoc's Cocktail Recipes "] = true,
+			["Nixtoc’s Least Favorites List"] = true,
+			["Recipes of Ancient Brevane"] = true,
+			["Selected Poems of Arlan Merkur"] = true,
+			["Steppes of Infinity"] = true,
+			["Storm Legion Mementos"] = true,
+			["Storm Legion Weaponry"] = true
+		},
+		cFF605EAF978332FA = {
+			["Brevane Biographies"] = true,
+			["Brevane Heraldry"] = true,
+			["Brevane Histories"] = true,
+			["Infinity Gate Architectural Plans"] = true,
+			["Infinity Gate Opposition Flyers"] = true,
+			["Infinity Gate Pieces"] = true
+		}
+	}
+
 local function strsplit(delimiter, text)
     local list = {}
     local pos = 1
@@ -33,6 +456,7 @@ local profile = {
     trackCollectionsForChars = {},
     artifactTable = {},
     scanAH = false,
+    tableOfArtifactAchievements = {}
 }
 
 local function Initialize(addonName)
@@ -198,6 +622,9 @@ local function SlashHandler(arg)
 
     --elseif cmd == "processah" then
     --    Indy:ProcessAHData(Indy.AHData)
+
+    elseif cmd == "scanachievements" then
+        Indy:ScanAchievements(Indy.nextAchievementKey)
 
     elseif cmd == "help" then
         Indy:PrintHelp()
@@ -381,6 +808,46 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
         print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(charList, ", "))
 
     end
+end
+
+function Indy:ScanAchievements(nextAchievementKey)
+    if not nextAchievementKey then
+        self.achievements  = tableOfArtifactAchievements
+    end
+
+    print(nextAchievementKey)
+    self.nextAchievementKey = self:ProcessAchievements(nextAchievementKey)
+end
+
+function Indy:ProcessAchievements(nextAchievementKey)
+    local counter = 1
+    local requirements = {}
+    local lastId
+
+    for achievementId, _ in next, self.achievements, nextAchievementKey do
+        if counter == 150 then
+            break
+        end
+        counter = counter + 1
+
+        local achievementDetails = Inspect.Achievement.Detail(achievementId)
+
+        if achievementDetails.description:find("artifact") then
+            print(achievementId .. " = ".. achievementDetails.name)
+
+            requirements = achievementDetails.requirement
+            for requirement, requirementDetails in pairs(requirements) do
+                if requirementDetails.type == "artifactset" then
+                    print("    " .. requirementDetails.name .. " = " .. tostring(requirementDetails.id) .. " Status: " .. tostring(requirementDetails.complete))
+                end
+            end
+
+        end
+        lastId = achievementId
+    end
+
+    return lastId
+
 end
 
 function Indy:PrintHelp()
