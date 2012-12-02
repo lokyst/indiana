@@ -70,30 +70,38 @@ local function Initialize(addonName)
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
 
-local function OnTooltipChange(ttType, ttShown, ttBuff)
-
-    local itemDetails = {}
+local function CheckForUnknownItems(tableOfItemIds)
+    local itemDetails
     local artifactId
+    local artifactName = ""
 
-    if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = Inspect.Item.Detail(ttShown)
+    tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
 
+    for _, itemDetails in pairs(tableOfItemDetails) do
         -- Check if it is a collectible item
-        if itemDetails and itemDetails.category and itemDetails.category:find("collectible") then
+        if itemDetails and itemDetails.category and itemDetails.category:find("misc") and itemDetails.category:find("collectible") then
             artifactId = itemDetails.type
+            artifactName = itemDetails.name
 
             -- Check if there is a record of it in our artifact list
             if not Indy.artifactTable[artifactId] then
                 Indy.artifactTable[artifactId] = {}
-                --print("New artifact recorded: " .. itemDetails.name)
+                print("New artifact recorded: [" .. artifactName .. "]")
             end
         end
     end
+end
 
+local function OnTooltipChange(ttType, ttShown, ttBuff)
+    local itemDetails = {}
+    local artifactId
+
+    if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
+        CheckForUnknownItems({ttShown})
+    end
 end
 
 local function InspectTooltip()
-
     local itemDetails = {}
     local artifactId
 
@@ -101,25 +109,17 @@ local function InspectTooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
         itemDetails = Inspect.Item.Detail(ttShown)
-
-        -- Check if it is a collectible item
-        if itemDetails.category and itemDetails.category:find("collectible") then
-            artifactId = itemDetails.type
-
-            -- Check if there is a record of it in our artifact list
-            if not Indy.artifactTable[artifactId] then
-                Indy.artifactTable[artifactId] = {}
-                --print("New artifact recorded: " .. itemDetails.name)
-            end
-        end
+        artifactId = itemDetails.type
     end
 
     return artifactId
 
 end
 
-local function CheckNewItem(tableOfSlots)
-    -- TODO -- Make this optional
+local function OnBagEvent(tableOfSlots)
+    -- TODO -- Make this option toggleable
+
+    CheckForUnknownItems(tableOfSlots)
 
     local tableOfItemDetails = Inspect.Item.Detail(tableOfSlots)
     local artifactId
@@ -131,12 +131,6 @@ local function CheckNewItem(tableOfSlots)
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
-            -- Check if there is a record of it in our artifact list
-            if not Indy.artifactTable[artifactId] then
-                Indy.artifactTable[artifactId] = {}
-                --print("New artifact recorded: [" .. artifactName .. "]")
-            end
-
             -- Print a list of chars who need this item
             charList = Indy:WhoNeedsItem(artifactId)
             if #charList > 0 then
@@ -144,9 +138,10 @@ local function CheckNewItem(tableOfSlots)
             end
         end
     end
+
 end
 
-local function CheckAHItem(tableOfTypes, tableOfAuctions)
+local function OnAuctionScan(tableOfTypes, tableOfAuctions)
     if not Indy.scanAH then
         return
     end
@@ -218,9 +213,9 @@ table.insert(Event.Addon.Load.End, {Initialize, "Indy", "Initialize"})
 table.insert(Event.Tooltip, {OnTooltipChange, "Indy", "OnTooltipChange"})
 table.insert(Event.Addon.SavedVariables.Save.Begin, {function() Indy:SaveVars() end, "Indy", "Save variables"})
 table.insert(Command.Slash.Register("indy"), {SlashHandler, "Indy", "Slash Handler"})
-table.insert(Event.Item.Slot, {CheckNewItem, "Indy", "CheckNewItem"})
-table.insert(Event.Item.Update, {CheckNewItem, "Indy", "CheckNewItem"})
-table.insert(Event.Auction.Scan, {CheckAHItem, "Indy", "CheckAHItem"})
+table.insert(Event.Item.Slot, {OnBagEvent, "Indy", "OnBagEvent"})
+table.insert(Event.Item.Update, {OnBagEvent, "Indy", "OnBagEvent"})
+table.insert(Event.Auction.Scan, {OnAuctionScan, "Indy", "OnAuctionScan"})
 
 ------------------------ Indy functions begin here -----------------------------
 
@@ -238,8 +233,7 @@ function Indy:ResetList()
 end
 
 function Indy:AddItemToChar(artifactId)
-    local playerDetails = Inspect.Unit.Detail("player")
-    local charName = playerDetails.name
+    local charName = self.charName
     local itemDetails = Inspect.Item.Detail(artifactId)
     local artifactName = itemDetails.name
 
@@ -250,8 +244,7 @@ function Indy:AddItemToChar(artifactId)
 end
 
 function Indy:DeleteItemFromChar(artifactId)
-    local playerDetails = Inspect.Unit.Detail("player")
-    local charName = playerDetails.name
+    local charName = self.charName
     local itemDetails = Inspect.Item.Detail(artifactId)
     local artifactName = itemDetails.name
 
@@ -311,16 +304,12 @@ function Indy:ScanBagsForArtifacts()
     local artifactName = ""
     local charList = {}
 
+    CheckForUnknownItems(itemIds)
+
     for itemId, itemDetails in pairs(tableOfItemDetails) do
         if itemDetails.category and itemDetails.category:find("collectible") then
             artifactId = itemDetails.type
             artifactName = itemDetails.name
-
-            -- Check if there is a record of it in our artifact list
-            if not self.artifactTable[artifactId] then
-                self.artifactTable[artifactId] = {}
-                --print("New artifact recorded: [" .. artifactName .. "]")
-            end
 
             -- Print a list of chars who need this item
             charList = self:WhoNeedsItem(artifactId)
@@ -352,23 +341,19 @@ function Indy:ProcessAHData(tableOfAuctions)
     local tableOfAuctionsByChar = {}
 
     for _, auctionDetails in pairs(tableOfAuctionDetails) do
-        auctionID = auctionDetails.id
+        auctionId = auctionDetails.id
         itemId = auctionDetails.item
         itemDetails = Inspect.Item.Detail(itemId)
+
+        CheckForUnknownItems({itemId})
 
         if itemDetails.category and itemDetails.category:find("collectible") then
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
-            -- Check if there is a record of it in our artifact list
-            if not self.artifactTable[artifactId] then
-                self.artifactTable[artifactId] = {}
-                --print("New artifact recorded: [" .. artifactName .. "]")
-            end
-
             -- Return a list of chars who need this item
             charList = self:WhoNeedsItem(artifactId)
-            tableOfAuctionsByChar[auctionID] = charList
+            tableOfAuctionsByChar[auctionId] = charList
 
         end
 
@@ -385,8 +370,8 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local artifactName = ""
     local auctionCost
 
-    for auctionID, charList in pairs(tableOfAuctionsByChar) do
-        auctionDetails = Inspect.Auction.Detail(auctionID)
+    for auctionId, charList in pairs(tableOfAuctionsByChar) do
+        auctionDetails = Inspect.Auction.Detail(auctionId)
         auctionBid = auctionDetails.bid
         auctionBuyout = auctionDetails.buyout
         itemId = auctionDetails.item
