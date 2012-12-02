@@ -43,6 +43,7 @@ end
 local profile = {
     trackCollectionsForChars = {},
     artifactTable = AllArtifactIds(),
+    scanBags, false,
     scanAH = false,
 }
 
@@ -129,6 +130,9 @@ end
 
 local function OnBagEvent(tableOfSlots)
     -- TODO -- Make this option toggleable
+    if not Indy.scanBags then
+        return
+    end
 
     CheckForUnknownItems(tableOfSlots)
 
@@ -209,8 +213,11 @@ local function SlashHandler(arg)
     elseif cmd == "donottrack" then
         Indy:RemoveCharFromTrackList(Indy.charName)
 
+    elseif cmd == "checkbags" then
+        Indy:CheckBagsForArtifacts()
+
     elseif cmd == "scanbags" then
-        Indy:ScanBagsForArtifacts()
+        Indy:ToggleScanBags()
 
     elseif cmd == "scanah" then
         Indy:ToggleScanAH()
@@ -316,7 +323,7 @@ function Indy:RemoveCharFromTrackList(charName)
     Indy.trackCollectionsForChars[charName] = false
 end
 
-function Indy:ScanBagsForArtifacts()
+function Indy:CheckBagsForArtifacts()
     local slots = Utility.Item.Slot.All()
     local itemIds = Inspect.Item.List(slots)
     local tableOfItemDetails = Inspect.Item.Detail(itemIds)
@@ -344,6 +351,11 @@ end
 function Indy:ToggleScanAH()
     self.scanAH = not self.scanAH
     print("Scan AH for artifacts: " .. tostring(self.scanAH))
+end
+
+function Indy:ToggleScanBags()
+    self.scanBags = not self.scanBags
+    print("Scan bag updates for artifacts: " .. tostring(self.scanBags))
 end
 
 function Indy:ProcessAHData(tableOfAuctions)
@@ -405,14 +417,15 @@ end
 
 function Indy:PrintHelp()
     print("Indiana's Artifact Tracker")
-    print("/indy reset - DANGER!!! Clears the list of known artifacts. DANGER!!!")
+    --print("/indy reset - DANGER!!! Clears the list of known artifacts. DANGER!!!")
     print("/indy additem - adds the mouse-overed item to the list of collected artifacts for this character")
     print("/indy deleteitem - removes the mouse-overed item from the list of collected artifacts for this character")
     print("/indy whohasitem - returns a list of the characters who have the mouse-overed item")
     print("/indy whoneedsitem - returns a list of the characters who need the mouse-overed item")
     print("/indy dotrack - adds the current character to the list of characters tracking collections")
     print("/indy donottrack - removes the current character from the list of characters tracking collections")
-    print("/indy scanbags - scan bags for artifacts")
+    print("/indy checkbags - check bags for artifacts")
+    --print("/indy scanbags - toggle scanning bag updates for artifacts")
     print("/indy scanah - toggle scanning AH for artifacts")
     print("/indy help - prints this message")
 end
