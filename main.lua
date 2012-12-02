@@ -32,6 +32,7 @@ end
 local profile = {
     trackCollectionsForChars = {},
     artifactTable = {},
+    scanAH = false,
 }
 
 local function Initialize(addonName)
@@ -118,6 +119,8 @@ local function InspectTooltip()
 end
 
 local function CheckNewItem(tableOfSlots)
+    -- TODO -- Make this optional
+
     local tableOfItemDetails = Inspect.Item.Detail(tableOfSlots)
     local artifactId
     local artifactName = ""
@@ -131,13 +134,13 @@ local function CheckNewItem(tableOfSlots)
             -- Check if there is a record of it in our artifact list
             if not Indy.artifactTable[artifactId] then
                 Indy.artifactTable[artifactId] = {}
-                --print("New artifact recorded: " .. artifactName)
+                --print("New artifact recorded: [" .. artifactName .. "]")
             end
 
             -- Print a list of chars who need this item
             charList = Indy:WhoNeedsItem(artifactId)
             if #charList > 0 then
-                print(artifactName .. " needed by: " .. table.concat(charList, ","))
+                print("[" .. artifactName .. "] needed by: " .. table.concat(charList, ", "))
             end
         end
     end
@@ -148,10 +151,15 @@ local function CheckAHItem(tableOfTypes, tableOfAuctions)
         return
     end
 
-    Indy.AHData = nil
-    Indy.AHData = tableOfAuctions
+    --Indy.AHData = nil
+    --Indy.AHData = tableOfAuctions
 
-    Indy.scanAH = false
+    -- Check that AH Data is paged before processing
+    if tableOfTypes.index and tableOfTypes.index >= 0 then
+        local tableOfAuctionsByChar = Indy:ProcessAHData(tableOfAuctions)
+        Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
+    end
+
 end
 
 local function SlashHandler(arg)
@@ -173,13 +181,13 @@ local function SlashHandler(arg)
         local artifactId = InspectTooltip()
         local charList = Indy:WhoHasItem(artifactId)
 
-        print(tostring(table.concat(charList, ",")))
+        print(tostring(table.concat(charList, ", ")))
 
     elseif cmd == "whoneedsitem" then
         local artifactId = InspectTooltip()
         local charList = Indy:WhoNeedsItem(artifactId)
 
-        print(tostring(table.concat(charList, ",")))
+        print(tostring(table.concat(charList, ", ")))
 
     elseif cmd == "dotrack" then
         Indy:AddCharToTrackList(Indy.charName)
@@ -191,10 +199,10 @@ local function SlashHandler(arg)
         Indy:ScanBagsForArtifacts()
 
     elseif cmd == "scanah" then
-        Indy:ScanAH()
+        Indy:ToggleScanAH()
 
-    elseif cmd == "processah" then
-        Indy:ProcessAHData()
+    --elseif cmd == "processah" then
+    --    Indy:ProcessAHData(Indy.AHData)
 
     elseif cmd == "help" then
         Indy:PrintHelp()
@@ -237,7 +245,7 @@ function Indy:AddItemToChar(artifactId)
 
     if self.artifactTable[artifactId] ~= nil then
         self.artifactTable[artifactId][charName] = true
-        print(charName .. " has collected " .. artifactName)
+        print(charName .. " has collected [" .. artifactName .. "]")
     end
 end
 
@@ -249,7 +257,7 @@ function Indy:DeleteItemFromChar(artifactId)
 
     if self.artifactTable[artifactId] ~= nil then
         self.artifactTable[artifactId][charName] = nil
-        print(charName .. " has deleted " .. artifactName)
+        print(charName .. " has deleted [" .. artifactName .. "]")
     end
 end
 
@@ -311,30 +319,40 @@ function Indy:ScanBagsForArtifacts()
             -- Check if there is a record of it in our artifact list
             if not self.artifactTable[artifactId] then
                 self.artifactTable[artifactId] = {}
-                --print("New artifact recorded: " .. artifactName)
+                --print("New artifact recorded: [" .. artifactName .. "]")
             end
 
             -- Print a list of chars who need this item
             charList = self:WhoNeedsItem(artifactId)
             if #charList > 0 then
-                print(artifactName .. " needed by: " .. table.concat(charList, ","))
+                print("[" .. artifactName .. "] needed by: " .. table.concat(charList, ", "))
             end
         end
     end
 
 end
 
-function Indy:ScanAH()
-    self.scanAH = true
-    Command.Auction.Scan({type="search", category = "misc collectible"})
+function Indy:ToggleScanAH()
+    self.scanAH = not self.scanAH
+    print("Scan AH for artifacts: " .. tostring(self.scanAH))
 end
 
-function Indy:ProcessAHData()
-    local tableOfAuctionDetails = Inspect.Auction.Detail(self.AHData)
-    local itemId = ""
-    local itemDetails
+function Indy:ProcessAHData(tableOfAuctions)
+    if not tableOfAuctions then
+        return
+    end
 
-    for auctionID, auctionDetails in pairs(tableOfAuctionDetails) do
+    local tableOfAuctionDetails = Inspect.Auction.Detail(tableOfAuctions)
+
+    local itemId = ""
+    local itemDetails = {}
+    local artifactId = ""
+    local artifactName = ""
+    local charList = {}
+    local tableOfAuctionsByChar = {}
+
+    for _, auctionDetails in pairs(tableOfAuctionDetails) do
+        auctionID = auctionDetails.id
         itemId = auctionDetails.item
         itemDetails = Inspect.Item.Detail(itemId)
 
@@ -345,18 +363,39 @@ function Indy:ProcessAHData()
             -- Check if there is a record of it in our artifact list
             if not self.artifactTable[artifactId] then
                 self.artifactTable[artifactId] = {}
-                --print("New artifact recorded: " .. artifactName)
+                --print("New artifact recorded: [" .. artifactName .. "]")
             end
 
-            -- Print a list of chars who need this item
+            -- Return a list of chars who need this item
             charList = self:WhoNeedsItem(artifactId)
-            if #charList > 0 then
-                print(artifactName .. " @ " .. tostring(auctionDetails.buyout) .. " needed by: " .. table.concat(charList, ","))
-            end
+            tableOfAuctionsByChar[auctionID] = charList
+
         end
 
     end
 
+    return tableOfAuctionsByChar
+
+end
+
+function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
+    local auctionDetails = {}
+    local itemId = ""
+    local itemDetails = {}
+    local artifactName = ""
+    local auctionCost
+
+    for auctionID, charList in pairs(tableOfAuctionsByChar) do
+        auctionDetails = Inspect.Auction.Detail(auctionID)
+        auctionBid = auctionDetails.bid
+        auctionBuyout = auctionDetails.buyout
+        itemId = auctionDetails.item
+        itemDetails = Inspect.Item.Detail(itemId)
+        artifactName = itemDetails.name
+
+        print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(charList, ", "))
+
+    end
 end
 
 function Indy:PrintHelp()
