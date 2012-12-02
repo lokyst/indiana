@@ -181,6 +181,10 @@ local function SlashHandler(arg)
 
     elseif cmd == "additem" then
         local artifactId = InspectTooltip()
+        if not artifactId then
+            return
+        end
+        
         Indy:AddItemToChar(artifactId)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
@@ -189,6 +193,10 @@ local function SlashHandler(arg)
 
     elseif cmd == "deleteitem" then
         local artifactId = InspectTooltip()
+        if not artifactId then
+            return
+        end
+
         Indy:DeleteItemFromChar(artifactId)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
@@ -262,6 +270,9 @@ function Indy:ResetList()
 end
 
 function Indy:AddItemToChar(artifactId)
+    if not artifactId then
+        return
+    end
     local charName = self.charName
 
     CheckForUnknownItems({artifactId})
@@ -272,6 +283,9 @@ function Indy:AddItemToChar(artifactId)
 end
 
 function Indy:DeleteItemFromChar(artifactId)
+    if not artifactId then
+        return
+    end
     local charName = self.charName
 
     CheckForUnknownItems({artifactId})
