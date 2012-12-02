@@ -143,6 +143,17 @@ local function CheckNewItem(tableOfSlots)
     end
 end
 
+local function CheckAHItem(tableOfTypes, tableOfAuctions)
+    if not Indy.scanAH then
+        return
+    end
+
+    Indy.AHData = nil
+    Indy.AHData = tableOfAuctions
+
+    Indy.scanAH = false
+end
+
 local function SlashHandler(arg)
     local cmds = strsplit(" ", arg)
     local cmd = string.lower(cmds[1])
@@ -179,6 +190,12 @@ local function SlashHandler(arg)
     elseif cmd == "scanbags" then
         Indy:ScanBagsForArtifacts()
 
+    elseif cmd == "scanah" then
+        Indy:ScanAH()
+
+    elseif cmd == "processah" then
+        Indy:ProcessAHData()
+
     elseif cmd == "help" then
         Indy:PrintHelp()
 
@@ -193,8 +210,9 @@ table.insert(Event.Addon.Load.End, {Initialize, "Indy", "Initialize"})
 table.insert(Event.Tooltip, {OnTooltipChange, "Indy", "OnTooltipChange"})
 table.insert(Event.Addon.SavedVariables.Save.Begin, {function() Indy:SaveVars() end, "Indy", "Save variables"})
 table.insert(Command.Slash.Register("indy"), {SlashHandler, "Indy", "Slash Handler"})
-table.insert(Event.Item.Slot, {CheckNewItem, "Indy", "ItemCheck"})
-table.insert(Event.Item.Update, {CheckNewItem, "Indy", "ItemCheck"})
+table.insert(Event.Item.Slot, {CheckNewItem, "Indy", "CheckNewItem"})
+table.insert(Event.Item.Update, {CheckNewItem, "Indy", "CheckNewItem"})
+table.insert(Event.Auction.Scan, {CheckAHItem, "Indy", "CheckAHItem"})
 
 ------------------------ Indy functions begin here -----------------------------
 
@@ -302,6 +320,41 @@ function Indy:ScanBagsForArtifacts()
                 print(artifactName .. " needed by: " .. table.concat(charList, ","))
             end
         end
+    end
+
+end
+
+function Indy:ScanAH()
+    self.scanAH = true
+    Command.Auction.Scan({type="search", category = "misc collectible"})
+end
+
+function Indy:ProcessAHData()
+    local tableOfAuctionDetails = Inspect.Auction.Detail(self.AHData)
+    local itemId = ""
+    local itemDetails
+
+    for auctionID, auctionDetails in pairs(tableOfAuctionDetails) do
+        itemId = auctionDetails.item
+        itemDetails = Inspect.Item.Detail(itemId)
+
+        if itemDetails.category and itemDetails.category:find("collectible") then
+            artifactId = itemDetails.type
+            artifactName = itemDetails.name
+
+            -- Check if there is a record of it in our artifact list
+            if not self.artifactTable[artifactId] then
+                self.artifactTable[artifactId] = {}
+                --print("New artifact recorded: " .. artifactName)
+            end
+
+            -- Print a list of chars who need this item
+            charList = self:WhoNeedsItem(artifactId)
+            if #charList > 0 then
+                print(artifactName .. " @ " .. tostring(auctionDetails.buyout) .. " needed by: " .. table.concat(charList, ","))
+            end
+        end
+
     end
 
 end
