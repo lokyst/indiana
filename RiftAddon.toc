@@ -1,0 +1,23 @@
+Identifier = "Indy"
+Name = "Indiana Artifact Hunter"
+NameShort = "INDY"
+Description = "An addon to manage artifacts"
+Author = "Lokyst"
+Website = ""
+Version = "0.11.0"
+Email = "rhoda.baker@gmail.com"
+Environment = "1.10"
+
+RunOnStartup = {
+    "main.lua",
+}
+
+SavedVariables = {
+  Indy_SavedVariables = "global"
+}
+
+Embed = {
+}
+
+Dependencies = {
+}
