@@ -6,7 +6,7 @@ Author = "Lokyst, dOxxx"
 Website = ""
 Version = "0.0.2"
 Email = "rhoda.baker@gmail.com"
-Environment = "1.10"
+Environment = "2.0"
 
 RunOnStartup = {
     "ArtifactCollections.lua",
