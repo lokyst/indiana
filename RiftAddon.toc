@@ -9,6 +9,7 @@ Email = "rhoda.baker@gmail.com"
 Environment = "1.10"
 
 RunOnStartup = {
+    "ArtifactCollections.lua",
     "main.lua",
 }
 
