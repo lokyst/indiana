@@ -393,5 +393,6 @@ function Indy:PrintHelp()
     print("/indy dotrack - adds the current character to the list of characters tracking collections")
     print("/indy donottrack - removes the current character from the list of characters tracking collections")
     print("/indy scanbags - scan bags for artifacts")
+    print("/indy scanah - toggle scanning AH for artifacts")
     print("/indy help - prints this message")
 end
