@@ -56,6 +56,7 @@ local function Initialize(addonName)
     -- Set default values
     if not Indy_SavedVariables then
         -- Has to be global for toc
+        --noinspection GlobalCreationOutsideO
         Indy_SavedVariables = {}
     end
 
@@ -87,7 +88,7 @@ local function CheckForUnknownItems(tableOfItemIds)
     local artifactId
     local artifactName = ""
 
-    tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
+    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
 
     for _, itemDetails in pairs(tableOfItemDetails) do
         -- Check if it is a collectible item
@@ -117,7 +118,7 @@ local function InspectTooltip()
     local itemDetails = {}
     local artifactId
 
-    ttType, ttShown = Inspect.Tooltip()
+    local ttType, ttShown = Inspect.Tooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
         itemDetails = Inspect.Item.Detail(ttShown)
@@ -301,7 +302,7 @@ function Indy:WhoHasItem(artifactId)
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
-                statusCollected = self.artifactTable[artifactId][name]
+                local statusCollected = self.artifactTable[artifactId][name]
                 if statusCollected then
                     table.insert(charList, name)
                 end
@@ -318,7 +319,7 @@ function Indy:WhoNeedsItem(artifactId)
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
-                statusCollected = self.artifactTable[artifactId][name]
+                local statusCollected = self.artifactTable[artifactId][name]
                 if not statusCollected then
                     table.insert(charList, name)
                 end
@@ -387,7 +388,7 @@ function Indy:ProcessAHData(tableOfAuctions)
     local tableOfAuctionsByChar = {}
 
     for _, auctionDetails in pairs(tableOfAuctionDetails) do
-        auctionId = auctionDetails.id
+        local auctionId = auctionDetails.id
         itemId = auctionDetails.item
         itemDetails = Inspect.Item.Detail(itemId)
 
@@ -414,7 +415,8 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local itemId = ""
     local itemDetails = {}
     local artifactName = ""
-    local auctionCost
+    local auctionBid
+    local auctionBuyout
 
     for auctionId, charList in pairs(tableOfAuctionsByChar) do
         auctionDetails = Inspect.Auction.Detail(auctionId)
