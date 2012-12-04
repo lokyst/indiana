@@ -11,6 +11,7 @@ Environment = "2.0"
 RunOnStartup = {
     "ArtifactCollections.lua",
     "main.lua",
+    "tooltip.lua",
 }
 
 SavedVariables = {
