@@ -1,31 +1,43 @@
--- Acknowledgement: The basic framework for this functionality was borrowed
--- from the ImhoBags AddOn, from file windows\TooltipEnhancer.lua.
+local addonInfo, InternalInterface = ...
+local addonID = addonInfo.identifier
+local PublicInterface = _G[addonID]
 
 local context = UI.CreateContext("Indy_TTContext")
-local window = UI.CreateFrame("Text", "Indy_Tooltip", context)
+local ttFrame = Yague.Popup("Indy_TooltipFrame", context)
+local ttTextFrame = UI.CreateFrame("Text", "Indy_Tooltip", ttFrame)
 
 context:SetStrata("topmost")
-window:SetVisible(false)
-window:SetBackgroundColor(0, 0, 0, 0.8)
+context:SetVisible(false)
+ttFrame:SetVisible(false)
+ttTextFrame:SetVisible(false)
 
-local padding = 10
-local verticalOffset = 0
+local padding = 20
+local verticalOffset = 8
 
 local function DisplayTooltip(tooltipString)
-    local left, top, right, bottom = UI.Native.Tooltip:GetBounds()
-    local screenHeight = UIParent:GetHeight()
-    local height = window:GetHeight()
+    ttTextFrame:SetText(tooltipString)
+    ttTextFrame:SetFontSize(14)
+    ttTextFrame:SetWordwrap(true)
+    ttTextFrame:ClearAll()
 
-    window:SetText(tooltipString)
-    window:SetFontSize(14)
-    window:SetVisible(true)
-    window:ClearAll()
-    window:SetPoint("TOPLEFT", UI.Native.Tooltip, "BOTTOMLEFT", padding, verticalOffset)
-    window:SetPoint("TOPRIGHT", UI.Native.Tooltip, "BOTTOMRIGHT", -padding, verticalOffset)
+    ttFrame:SetPoint("TOPLEFT", UI.Native.Tooltip, "BOTTOMLEFT", 0, 5)
+    ttFrame:SetPoint("TOPRIGHT", UI.Native.Tooltip, "BOTTOMRIGHT", 0, 5)
+
+    ttTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", padding, verticalOffset)
+    ttTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -padding, verticalOffset)
+
+    ttFrame:SetHeight(math.max(58,ttTextFrame:GetHeight() + verticalOffset*2))
+
+    ttFrame:SetVisible(true)
+    ttTextFrame:SetVisible(true)
+    context:SetVisible(true)
 end
+Yague.RegisterPopupConstructor(addonID .. ".DisplayTooltip", DisplayTooltip)
 
 local function IndyTooltip(ttType, ttShown, ttBuff)
-    window:SetVisible(false)
+    context:SetVisible(false)
+    ttFrame:SetVisible(false)
+    ttTextFrame:SetVisible(false)
 
     if not (ttType and ttShown) then return end
 
@@ -35,7 +47,11 @@ local function IndyTooltip(ttType, ttShown, ttBuff)
 
     if not itemDetails then return end
 
-    if not itemDetails.category and not itemDetails.category:find("collectible") then
+    if not itemDetails.category and not (itemDetails.category:find("misc") and itemDetails.category:find("collectible")) then
+        return
+    end
+
+    if itemDetails.sell == nil or itemDetails.sell ~= 1 then
         return
     end
 
@@ -50,7 +66,9 @@ local function IndyTooltip(ttType, ttShown, ttBuff)
     if #hasList > 0 then
         table.insert(myStrings, "Has: " .. (table.concat(hasList, ", ")))
     end
-    DisplayTooltip(table.concat(myStrings, "\n"))
+    if #myStrings > 0 then
+        DisplayTooltip(table.concat(myStrings, "\n"))
+    end
 end
 
 table.insert(Event.Tooltip, {IndyTooltip, "Indy", "IndyTooltip"})
