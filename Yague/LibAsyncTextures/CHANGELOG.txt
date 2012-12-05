@@ -1,0 +1,8 @@
+FEATURES:
+* Initial release, check http://rift.curseforge.com/addons/lib-async-textures/
+CHANGES:
+* Instead of using weights the library now tracks loading time
+	IMPORTANT: The signature of SetTextureAsync() has changed since 1.0beta!
+FIXES:
+* Fixed nil being passed as argument to the callbacks
+ISSUES:

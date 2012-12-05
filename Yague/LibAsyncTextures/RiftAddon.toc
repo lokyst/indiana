@@ -1,0 +1,24 @@
+Identifier = "LibAsyncTextures"
+Name = "LibAsyncTextures"
+NameShort = "LibAsyncTextures"
+Description = "A library for providing asynchronous loading of Texture widget contents in the background to avoid getting barked at by the Watchdog in texture-rich environments."
+
+Author = "Imhothar"
+Website = "http://rift.curseforge.com/addons/lib-async-textures/"
+Email = "imhothar@freenet.de"
+
+Version = "1.1.2"
+Environment = "1.9"
+
+RunOnStartup = {
+	"Main.lua",
+}
+
+-- Set this value to true to enable chat spamming debug messages and other debugging facilities
+--@debug@
+-- debug = true
+--@end-debug@
+-- X-Curse-Packaged-Version: r20120629012028
+-- X-Curse-Project-Name: LibAsyncTextures
+-- X-Curse-Project-ID: lib-async-textures
+-- X-Curse-Repository-ID: rift/lib-async-textures/mainline

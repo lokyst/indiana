@@ -19,7 +19,9 @@ SavedVariables = {
 }
 
 Embed = {
+    Yague = true,
 }
 
 Dependencies = {
+    Yague = {"required", "before"},
 }
