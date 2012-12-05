@@ -35,6 +35,10 @@ end
 Yague.RegisterPopupConstructor(addonID .. ".DisplayTooltip", DisplayTooltip)
 
 local function IndyTooltip(ttType, ttShown, ttBuff)
+    if not Indy.showTooltips then
+        return
+    end
+    
     context:SetVisible(false)
     ttFrame:SetVisible(false)
     ttTextFrame:SetVisible(false)

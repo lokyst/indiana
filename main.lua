@@ -45,6 +45,7 @@ local profile = {
     artifactTable = AllArtifactIds(),
     scanBags, false,
     scanAH = false,
+    showTooltips = true,
 }
 
 local function Initialize(addonName)
@@ -233,6 +234,9 @@ local function SlashHandler(arg)
 
     elseif cmd == "scanah" then
         Indy:ToggleScanAH()
+
+    elseif cmd == "showtooltips" then
+        Indy:ToggleShowTooltips()
 
     --elseif cmd == "processah" then
     --    Indy:ProcessAHData(Indy.AHData)
@@ -434,6 +438,11 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     end
 end
 
+function Indy:ToggleShowTooltips()
+    self.showTooltips = not self.showTooltips
+    print("Show Tooltips: " .. tostring(self.showTooltips))
+end
+
 function Indy:PrintHelp()
     print("Indiana's Artifact Tracker")
     --print("/indy reset - DANGER!!! Clears the list of known artifacts. DANGER!!!")
@@ -446,5 +455,6 @@ function Indy:PrintHelp()
     print("/indy checkbags - check bags for artifacts")
     --print("/indy scanbags - toggle scanning bag updates for artifacts")
     print("/indy scanah - toggle scanning AH for artifacts")
+    print("/indy showtooltips - toggle display of tooltips for artifacts")
     print("/indy help - prints this message")
 end
