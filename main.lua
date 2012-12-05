@@ -92,7 +92,10 @@ local function CheckForUnknownItems(tableOfItemIds)
 
     for _, itemDetails in pairs(tableOfItemDetails) do
         -- Check if it is a collectible item
-        if itemDetails and itemDetails.category and itemDetails.category:find("misc") and itemDetails.category:find("collectible") then
+        if itemDetails and itemDetails.category and itemDetails.sell and
+                itemDetails.category:find("misc") and
+                itemDetails.category:find("collectible") and
+                itemDetails.sell == 1 then
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
@@ -185,7 +188,7 @@ local function SlashHandler(arg)
         if not artifactId then
             return
         end
-        
+
         Indy:AddItemToChar(artifactId)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
