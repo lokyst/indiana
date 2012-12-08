@@ -1,7 +1,3 @@
-local addonInfo, InternalInterface = ...
-local addonID = addonInfo.identifier
-local PublicInterface = _G[addonID]
-
 local context = UI.CreateContext("Indy_TTContext")
 local ttFrame = UI.CreateFrame("Frame", "Indy_TTFrame", context)
 Library.LibSimpleWidgets.SetBorder("tooltip", ttFrame)
