@@ -20,11 +20,9 @@ SavedVariables = {
 }
 
 Embed = {
-    Yague = true,
     ["Libs/LibSimpleWidgets"] = true,
 }
 
 Dependencies = {
-    Yague = {"required", "before"},
     LibSimpleWidgets = {"required", "before"},
 }
