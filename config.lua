@@ -139,6 +139,16 @@ local CONFIG_TABLE = {
         get = function() return Indy.showTooltips end,
         set = function(value) return Indy:ToggleShowTooltips() end,
     },
+    scanAH = {
+        order = 20,
+        type = "checkbox",
+        label = "Scan AH for needed artifacts",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.scanAH end,
+        set = function(value) return Indy:ToggleScanAH() end,
+    },
+
 }
 
 local function BuildConfigWindow()
