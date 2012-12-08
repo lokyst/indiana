@@ -11,6 +11,7 @@ Environment = "2.0"
 RunOnStartup = {
     "ArtifactCollections.lua",
     "main.lua",
+    "config.lua",
     "tooltip.lua",
 }
 
@@ -20,8 +21,10 @@ SavedVariables = {
 
 Embed = {
     Yague = true,
+    ["Libs/LibSimpleWidgets"] = true,
 }
 
 Dependencies = {
     Yague = {"required", "before"},
+    LibSimpleWidgets = {"required", "before"},
 }

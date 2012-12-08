@@ -75,6 +75,8 @@ local function Initialize(addonName)
     local playerDetails = Inspect.Unit.Detail("player")
     local charName = playerDetails.name
     Indy.charName = charName
+    Indy.doNotTrackListSelected = nil
+    Indy.trackListSelected = nil
 
     -- Automatically add new characters to the track list
     if Indy.trackCollectionsForChars[charName] == nil then
@@ -237,6 +239,9 @@ local function SlashHandler(arg)
 
     elseif cmd == "showtooltips" then
         Indy:ToggleShowTooltips()
+
+    elseif cmd == "config" then
+        Indy:ShowConfigWindow()
 
     --elseif cmd == "processah" then
     --    Indy:ProcessAHData(Indy.AHData)
@@ -438,9 +443,21 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     end
 end
 
+function Indy:SetTrackStatus(charName, bool)
+    if not charName then
+        return
+    end
+    self.trackCollectionsForChars[charName] = bool
+end
+
 function Indy:ToggleShowTooltips()
     self.showTooltips = not self.showTooltips
     print("Show Tooltips: " .. tostring(self.showTooltips))
+end
+
+function Indy:ShowConfigWindow()
+    local configWindow = Indy:BuildConfigWindow()
+    configWindow:SetVisible(true)
 end
 
 function Indy:PrintHelp()
