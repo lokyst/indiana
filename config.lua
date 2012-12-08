@@ -83,7 +83,7 @@ local function CreateTrackListFrame(parent)
 
     local trackButton = UI.CreateFrame("Texture", "Indy_TrackButton", configListFrame)
     trackButton:SetPoint("BOTTOMCENTER", configListFrame, "CENTERCENTER", 0, -10)
-    trackButton:SetTexture("Indy", "textures/undo_icon&24.png")
+    trackButton:SetTexture("Indy", "textures/sq_next_icon&24.png")
     trackButton:SetAlpha(0.75)
 
     function trackButton.Event:MouseIn()
@@ -103,7 +103,7 @@ local function CreateTrackListFrame(parent)
 
     local doNotTrackButton = UI.CreateFrame("Texture", "Indy_DoNotTrackButton", configListFrame)
     doNotTrackButton:SetPoint("TOPCENTER", configListFrame, "CENTERCENTER", 0, 10)
-    doNotTrackButton:SetTexture("Indy", "textures/cogs_icon&24.png")
+    doNotTrackButton:SetTexture("Indy", "textures/sq_prev_icon&24.png")
     doNotTrackButton:SetAlpha(0.75)
 
     function doNotTrackButton.Event:MouseIn()
