@@ -63,9 +63,6 @@ local function CreateTrackListFrame(parent)
     configDoNotTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame1", configDoNotTrackListMask)
     configDoNotTrackListMask:SetContent(configDoNotTrackListFrame)
     configDoNotTrackListMask:SetScrollInterval(20)
-    function configDoNotTrackListFrame.Event:ItemSelect(item)
-        Indy.doNotTrackListSelected = item
-    end
 
     -- Create a mask for the table of list names
     local configTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask2", configListFrame)
@@ -77,8 +74,14 @@ local function CreateTrackListFrame(parent)
     configTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame2", configTrackListMask)
     configTrackListMask:SetContent(configTrackListFrame)
     configTrackListMask:SetScrollInterval(20)
+
+    -- Set functions for selecting a name from either list
+    function configDoNotTrackListFrame.Event:ItemSelect(item)
+        configTrackListFrame:ClearSelection()
+    end
+
     function configTrackListFrame.Event:ItemSelect(item)
-        Indy.trackListSelected = item
+        configDoNotTrackListFrame:ClearSelection()
     end
 
     local trackButton = UI.CreateFrame("Texture", "Indy_TrackButton", configListFrame)
@@ -95,7 +98,8 @@ local function CreateTrackListFrame(parent)
     end
 
     trackButton.Event.LeftClick = function()
-        Indy:SetTrackStatus(Indy.doNotTrackListSelected, true)
+        local itemSelected = configDoNotTrackListFrame:GetSelectedItem()
+        Indy:SetTrackStatus(itemSelected, true)
         local trackList, doNotTrackList = RefreshTrackLists()
         configDoNotTrackListFrame:SetItems(doNotTrackList)
         configTrackListFrame:SetItems(trackList)
@@ -115,7 +119,8 @@ local function CreateTrackListFrame(parent)
     end
 
     doNotTrackButton.Event.LeftClick = function()
-        Indy:SetTrackStatus(Indy.trackListSelected, false)
+        local itemSelected = configTrackListFrame:GetSelectedItem()
+        Indy:SetTrackStatus(itemSelected, false)
         local trackList, doNotTrackList = RefreshTrackLists()
         configDoNotTrackListFrame:SetItems(doNotTrackList)
         configTrackListFrame:SetItems(trackList)

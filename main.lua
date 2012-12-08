@@ -75,8 +75,6 @@ local function Initialize(addonName)
     local playerDetails = Inspect.Unit.Detail("player")
     local charName = playerDetails.name
     Indy.charName = charName
-    Indy.doNotTrackListSelected = nil
-    Indy.trackListSelected = nil
 
     -- Automatically add new characters to the track list
     if Indy.trackCollectionsForChars[charName] == nil then
