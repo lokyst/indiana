@@ -455,11 +455,6 @@ function Indy:ToggleShowTooltips()
     print("Show Tooltips: " .. tostring(self.showTooltips))
 end
 
-function Indy:ShowConfigWindow()
-    local configWindow = Indy:BuildConfigWindow()
-    configWindow:SetVisible(true)
-end
-
 function Indy:PrintHelp()
     print("Indiana's Artifact Tracker")
     --print("/indy reset - DANGER!!! Clears the list of known artifacts. DANGER!!!")
@@ -473,5 +468,6 @@ function Indy:PrintHelp()
     --print("/indy scanbags - toggle scanning bag updates for artifacts")
     print("/indy scanah - toggle scanning AH for artifacts")
     print("/indy showtooltips - toggle display of tooltips for artifacts")
+    print("/indy config - opens the configuration window")
     print("/indy help - prints this message")
 end

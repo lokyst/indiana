@@ -141,7 +141,7 @@ local CONFIG_TABLE = {
     },
 }
 
-function Indy:BuildConfigWindow()
+local function BuildConfigWindow()
     local configWindow = CreateConfigWindow()
     local configFrame = CreateConfigFrame(configWindow)
     local configOptionFrame = CreateConfigOptionFrame(configFrame)
@@ -150,5 +150,11 @@ function Indy:BuildConfigWindow()
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, configOptionFrame)
 
     return configWindow
+end
 
+function Indy:ShowConfigWindow()
+    if not self.configWindow then
+        self.configWindow = BuildConfigWindow()
+    end
+    self.configWindow:SetVisible(true)
 end
