@@ -137,7 +137,6 @@ local function InspectTooltip()
 end
 
 local function OnBagEvent(tableOfSlots)
-    -- TODO -- Make this option toggleable
     if not Indy.scanBags then
         return
     end
