@@ -3,10 +3,6 @@ local context = UI.CreateContext("Indy_BagContext")
 local bagButtonFrame = UI.CreateFrame("Frame", "Indy_BagButton", context)
 bagButtonFrame:SetVisible(false)
 
-bagButtonFrame.Event.LeftClick = function()
-    Indy:CheckBagsForArtifacts()
-end
-
 local bagButtonTexture1 = UI.CreateFrame("Texture", "Indy_BagButtonTexture1", bagButtonFrame)
 bagButtonTexture1:SetTexture("Indy", "textures/fuglybutton.png")
 bagButtonTexture1:SetPoint("BOTTOMRIGHT", UI.Native.Bag, "TOPLEFT", 15, 15)
