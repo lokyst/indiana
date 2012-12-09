@@ -63,7 +63,7 @@ local function Initialize(addonName)
     end
 
     for key, value in pairs(profile) do
-        if not Indy_SavedVariables[key] then
+        if Indy_SavedVariables[key] == nil then
             Indy[key] = value
         else
             Indy[key] = Indy_SavedVariables[key]
