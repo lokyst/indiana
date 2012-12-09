@@ -4,7 +4,7 @@ NameShort = "INDY"
 Description = "An addon to catalogue your artifacts"
 Author = "Lokyst, dOxxx"
 Website = ""
-Version = "0.1"
+Version = "1.0"
 Email = "rhoda.baker@gmail.com"
 Environment = "2.0"
 
