@@ -75,6 +75,20 @@ local function CreateTrackListFrame(parent)
     configTrackListMask:SetContent(configTrackListFrame)
     configTrackListMask:SetScrollInterval(20)
 
+    -- Attach a label to the top of the do not track list box
+    local configDoNotTrackLabel = UI.CreateFrame("Text", "Indy_DoNotTrackLabel", configListFrame)
+    configDoNotTrackLabel:SetPoint("BOTTOMLEFT", configDoNotTrackListFrame, "TOPLEFT", 0, 0)
+    configDoNotTrackLabel:SetText("DO NOT TRACK")
+    configDoNotTrackLabel:SetFontSize(16)
+    configDoNotTrackLabel:SetFontColor(0.86,0.81,0.63)
+
+    -- Attach a label to the top of the track list box
+    local configTrackLabel = UI.CreateFrame("Text", "Indy_TrackLabel", configListFrame)
+    configTrackLabel:SetPoint("BOTTOMLEFT", configTrackListFrame, "TOPLEFT", 0, 0)
+    configTrackLabel:SetText("TRACK")
+    configTrackLabel:SetFontSize(16)
+    configTrackLabel:SetFontColor(0.86,0.81,0.63)
+
     -- Set functions for selecting a name from either list
     function configDoNotTrackListFrame.Event:ItemSelect(item)
         configTrackListFrame:ClearSelection()
