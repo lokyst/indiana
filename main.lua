@@ -273,9 +273,9 @@ table.insert(Event.Auction.Scan, {OnAuctionScan, "Indy", "OnAuctionScan"})
 function Indy:SaveVars()
     for key, _ in pairs(profile) do
         -- Avoid overwriting with nil in the event that the addon crashes
-        --if not (Indy[key] == nil) then
+        if not (Indy[key] == nil) then
             Indy_SavedVariables[key] = Indy[key]
-        --end
+        end
     end
 end
 
