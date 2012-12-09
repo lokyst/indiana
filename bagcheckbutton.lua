@@ -19,6 +19,10 @@ bagButtonTexture2.Event.RightClick = function()
     Indy:ShowConfigWindow()
 end
 
+local tt = UI.CreateFrame("SimpleTooltip", "Indy_BagTooltip", context)
+local ttString = "Indiana\nLeft-click to scan bags for artifacts\nRight-click to show configuration window"
+tt:InjectEvents(bagButtonTexture2, function() return ttString end)
+
 function Indy:ShowBagCheckButton()
     if Indy.showBagCheckButton then
         bagButtonFrame:SetVisible(true)
