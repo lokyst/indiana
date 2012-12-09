@@ -43,7 +43,7 @@ end
 local profile = {
     trackCollectionsForChars = {},
     artifactTable = AllArtifactIds(),
-    scanBags, false,
+    scanBags = false,
     scanAH = false,
     showTooltips = true,
     showBagCheckButton = true,
