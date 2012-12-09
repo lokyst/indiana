@@ -253,7 +253,7 @@ local function SlashHandler(arg)
         Indy:PrintHelp()
 
     else
-        Indy:PrintHelp()
+        Indy:ShowConfigWindow()
 
     end
 
