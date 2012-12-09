@@ -436,8 +436,9 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
         itemDetails = Inspect.Item.Detail(itemId)
         artifactName = itemDetails.name
 
-        print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(charList, ", "))
-
+        if #charList > 0 then
+            print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(charList, ", "))
+        end
     end
 end
 
