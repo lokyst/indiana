@@ -11,6 +11,9 @@ local function CreateConfigWindow()
     -- Add a close button to the top right corner
     baseConfigWindow:SetCloseButtonVisible(true)
 
+    -- Set the title
+    baseConfigWindow:SetTitle("Indiana Settings")
+
     -- Hide the window
     baseConfigWindow:SetVisible(false)
 
