@@ -13,6 +13,7 @@ RunOnStartup = {
     "main.lua",
     "config.lua",
     "tooltip.lua",
+    "bagcheckbutton.lua",
 }
 
 SavedVariables = {

@@ -46,6 +46,7 @@ local profile = {
     scanBags, false,
     scanAH = false,
     showTooltips = true,
+    showBagCheckButton = true,
 }
 
 local function Initialize(addonName)
@@ -80,6 +81,8 @@ local function Initialize(addonName)
     if Indy.trackCollectionsForChars[charName] == nil then
         Indy.trackCollectionsForChars[charName] = true
     end
+
+    Indy:ShowBagCheckButton()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
@@ -452,6 +455,12 @@ end
 function Indy:ToggleShowTooltips()
     self.showTooltips = not self.showTooltips
     print("Show Tooltips: " .. tostring(self.showTooltips))
+end
+
+function Indy:ToggleShowBagCheckButton()
+    self.showBagCheckButton = not self.showBagCheckButton
+    print("Show Bag Check Button: " .. tostring(self.showBagCheckButton))
+    self:ShowBagCheckButton()
 end
 
 function Indy:PrintHelp()

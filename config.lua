@@ -170,7 +170,15 @@ local CONFIG_TABLE = {
         get = function() return Indy.scanAH end,
         set = function(value) return Indy:ToggleScanAH() end,
     },
-
+    showIcon = {
+        order = 30,
+        type = "checkbox",
+        label = "Show bag scan icon",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.showBagCheckButton end,
+        set = function(value) return Indy:ToggleShowBagCheckButton() end,
+    },
 }
 
 local function BuildConfigWindow()
