@@ -1,0 +1,4 @@
+externals:
+    Libs/LibSimpleWidgets:
+        url: git://git.curseforge.net/rift/libsimplewidgets/mainline.git
+        tag: latest
