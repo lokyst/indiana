@@ -1,7 +1,5 @@
 local context = UI.CreateContext("Indy_TTContext")
 local ttFrame = UI.CreateFrame("Frame", "Indy_TTFrame", context)
-Library.LibSimpleWidgets.SetBorder("tooltip", ttFrame)
-ttFrame.__lsw_border:SetPosition("inside")
 local ttNeedsTextFrame = UI.CreateFrame("Text", "Indy_NeedsTooltip", ttFrame)
 ttNeedsTextFrame:SetBackgroundColor(0,0,0,0.75)
 local ttHasTextFrame = UI.CreateFrame("Text", "Indy_HasTooltip", ttFrame)
@@ -116,6 +114,16 @@ local function OnFrameUpdate()
             onNextFrameFunc()
             onNextFrameFunc = nil
         end
+    end
+end
+
+function Indy:UpdateTooltipBorder()
+    if Indy.showTooltipBorder then
+        Library.LibSimpleWidgets.SetBorder("tooltip", ttFrame)
+        ttFrame.__lsw_border:SetPosition("inside")
+    elseif ttFrame.__lsw_border then
+        ttFrame.__lsw_border:Destroy()
+        ttFrame.__lsw_border = nil
     end
 end
 

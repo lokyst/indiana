@@ -47,6 +47,7 @@ local profile = {
     scanAH = false,
     showTooltips = true,
     showBagCheckButton = true,
+    showTooltipBorder = true,
 }
 
 local function Initialize(addonName)
@@ -83,6 +84,9 @@ local function Initialize(addonName)
     end
 
     Indy:ShowBagCheckButton()
+
+    -- Initialize frames
+    Indy:UpdateTooltipBorder()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
@@ -239,6 +243,9 @@ local function SlashHandler(arg)
 
     elseif cmd == "showtooltips" then
         Indy:ToggleShowTooltips()
+
+    elseif cmd == "showtooltipborder" then
+        Indy:ToggleShowTooltipBorder()
 
     elseif cmd == "config" then
         Indy:ShowConfigWindow()
@@ -473,8 +480,9 @@ function Indy:PrintHelp()
     print("/indy donottrack - removes the current character from the list of characters tracking collections")
     print("/indy checkbags - check bags for artifacts")
     --print("/indy scanbags - toggle scanning bag updates for artifacts")
-    print("/indy scanah - toggle scanning AH for artifacts")
-    print("/indy showtooltips - toggle display of tooltips for artifacts")
+    print("/indy scanah - toggle scanning AH for artifacts  (" .. tostring(self.scanBags) .. ")")
+    print("/indy showtooltips - toggle display of tooltips for artifacts (" .. tostring(self.showTooltips) .. ")")
+    print("/indy showtooltipborder - toggle display of pretty tooltip borders (" .. tostring(self.showTooltipBorder) .. ")")
     print("/indy config - opens the configuration window")
     print("/indy help - prints this message")
 end

@@ -161,6 +161,15 @@ local CONFIG_TABLE = {
         get = function() return Indy.showTooltips end,
         set = function(value) return Indy:ToggleShowTooltips() end,
     },
+    showTooltipBorder = {
+        order = 11,
+        type = "checkbox",
+        label = "Show pretty tooltip borders",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.showTooltipBorder end,
+        set = function(value) return Indy:ToggleShowTooltipBorder() end,
+    },
     scanAH = {
         order = 20,
         type = "checkbox",
@@ -197,4 +206,11 @@ function Indy:ShowConfigWindow()
         self.configWindow = BuildConfigWindow()
     end
     self.configWindow:SetVisible(true)
+end
+
+function Indy:ToggleShowTooltipBorder()
+    self.showTooltipBorder = not self.showTooltipBorder
+    print("Show pretty tooltip borders: " .. tostring(self.showTooltipBorder))
+
+    self:UpdateTooltipBorder()
 end

@@ -4,9 +4,9 @@ NameShort = "INDY"
 Description = "An addon to catalogue your artifacts"
 Author = "Lokyst, dOxxx"
 Website = ""
-Version = "1.0"
+Version = "1.0.1"
 Email = "rhoda.baker@gmail.com"
-Environment = "2.0"
+Environment = "2.1"
 
 RunOnStartup = {
     "ArtifactCollections.lua",
