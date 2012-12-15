@@ -2,7 +2,6 @@ local context = UI.CreateContext("Indy_BagContext")
 
 local bagButtonTexture2 = UI.CreateFrame("Texture", "Indy_BagButtonTexture2", context)
 bagButtonTexture2:SetTexture("Indy", "textures/IndyIcon_Normal.png")
-bagButtonTexture2:SetPoint("BOTTOMRIGHT", UI.Native.Bag, "TOPLEFT", 15, 15)
 bagButtonTexture2:SetVisible(false)
 
 function bagButtonTexture2.Event:MouseIn()
@@ -39,6 +38,14 @@ end
 
 bagButtonTexture2.Event.RightClick = function()
     Indy:ShowConfigWindow()
+end
+
+if MINIMAPDOCKER then
+    MINIMAPDOCKER.Register("Indy", bagButtonTexture2)
+end
+
+if not MINIMAPDOCKER then
+    bagButtonTexture2:SetPoint("BOTTOMRIGHT", UI.Native.Bag, "TOPLEFT", 15, 15)
 end
 
 local tt = UI.CreateFrame("SimpleTooltip", "Indy_BagTooltip", context)
