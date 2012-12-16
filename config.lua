@@ -102,16 +102,23 @@ local function CreateTrackListFrame(parent)
     end
 
     local trackButton = UI.CreateFrame("Texture", "Indy_TrackButton", configListFrame)
-    trackButton:SetPoint("BOTTOMCENTER", configListFrame, "CENTERCENTER", 0, -10)
-    trackButton:SetTexture("Indy", "textures/sq_next_icon&24.png")
-    trackButton:SetAlpha(0.75)
+    trackButton:SetPoint("BOTTOMCENTER", configListFrame, "CENTERCENTER", 0, -2)
+    trackButton:SetTexture("Indy", "textures/RightArrow_Normal.png")
 
     function trackButton.Event:MouseIn()
-        self:SetAlpha(1)
+        self:SetTexture("Indy", "textures/RightArrow_Over.png")
     end
 
     function trackButton.Event:MouseOut()
-        self:SetAlpha(0.75)
+        self:SetTexture("Indy", "textures/RightArrow_Normal.png")
+    end
+
+    function trackButton.Event:LeftDown()
+        self:SetTexture("Indy", "textures/RightArrow_Down.png")
+    end
+
+    function trackButton.Event:LeftUp()
+        self:SetTexture("Indy", "textures/RightArrow_Over.png")
     end
 
     trackButton.Event.LeftClick = function()
@@ -123,16 +130,23 @@ local function CreateTrackListFrame(parent)
     end
 
     local doNotTrackButton = UI.CreateFrame("Texture", "Indy_DoNotTrackButton", configListFrame)
-    doNotTrackButton:SetPoint("TOPCENTER", configListFrame, "CENTERCENTER", 0, 10)
-    doNotTrackButton:SetTexture("Indy", "textures/sq_prev_icon&24.png")
-    doNotTrackButton:SetAlpha(0.75)
+    doNotTrackButton:SetPoint("TOPCENTER", configListFrame, "CENTERCENTER", 0, 2)
+    doNotTrackButton:SetTexture("Indy", "textures/LeftArrow_Normal.png")
 
     function doNotTrackButton.Event:MouseIn()
-        self:SetAlpha(1)
+        self:SetTexture("Indy", "textures/LeftArrow_Over.png")
     end
 
     function doNotTrackButton.Event:MouseOut()
-        self:SetAlpha(0.75)
+        self:SetTexture("Indy", "textures/LeftArrow_Normal.png")
+    end
+
+    function doNotTrackButton.Event:LeftDown()
+        self:SetTexture("Indy", "textures/LeftArrow_Down.png")
+    end
+
+    function doNotTrackButton.Event:LeftUp()
+        self:SetTexture("Indy", "textures/LeftArrow_Over.png")
     end
 
     doNotTrackButton.Event.LeftClick = function()
