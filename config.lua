@@ -56,27 +56,39 @@ local function CreateTrackListFrame(parent)
     configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 50, -50)
     configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-50, -70)
 
+    local configListTexture1 = UI.CreateFrame("Texture", "Indy_ConfigListTexture1", configListFrame)
+    configListTexture1:SetPoint("TOPLEFT", configListFrame, "TOPLEFT", -5, -5)
+    configListTexture1:SetPoint("BOTTOMRIGHT", configListFrame, "BOTTOMCENTER", -20, 5)
+    configListTexture1:SetTexture("Rift", "token_special_nonselected_down.png.dds")
+
     -- Create a mask for the table of list names
-    local configDoNotTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask1", configListFrame)
+    local configDoNotTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask1", configListTexture1)
     configDoNotTrackListMask:SetPoint("TOPLEFT", configListFrame, "TOPLEFT")
     configDoNotTrackListMask:SetPoint("BOTTOMRIGHT", configListFrame, "BOTTOMCENTER", -25, 0)
-    configDoNotTrackListMask:SetBackgroundColor(0, 0, 0, 1)
+    configDoNotTrackListMask:SetBackgroundColor(0, 0, 0, 0)
 
     -- Create a frame to hold the table of list names
     configDoNotTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame1", configDoNotTrackListMask)
     configDoNotTrackListMask:SetContent(configDoNotTrackListFrame)
     configDoNotTrackListMask:SetScrollInterval(20)
+    configDoNotTrackListFrame:SetBackgroundColor(0, 0, 0, 0)
+
+    local configListTexture2 = UI.CreateFrame("Texture", "Indy_ConfigListTexture2", configListFrame)
+    configListTexture2:SetPoint("TOPRIGHT", configListFrame, "TOPRIGHT", 5, -5)
+    configListTexture2:SetPoint("BOTTOMLEFT", configListFrame, "BOTTOMCENTER", 20, 5)
+    configListTexture2:SetTexture("Rift", "token_special_nonselected_down.png.dds")
 
     -- Create a mask for the table of list names
-    local configTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask2", configListFrame)
+    local configTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask2", configListTexture2)
     configTrackListMask:SetPoint("TOPRIGHT", configListFrame, "TOPRIGHT")
     configTrackListMask:SetPoint("BOTTOMLEFT", configListFrame, "BOTTOMCENTER", 25, 0)
-    configTrackListMask:SetBackgroundColor(0, 0, 0, 1)
+    configTrackListMask:SetBackgroundColor(0, 0, 0, 0)
 
     -- Create a frame to hold the table of list names
     configTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame2", configTrackListMask)
     configTrackListMask:SetContent(configTrackListFrame)
     configTrackListMask:SetScrollInterval(20)
+    configTrackListFrame:SetBackgroundColor(0, 0, 0, 0)
 
     -- Attach a label to the top of the do not track list box
     local configDoNotTrackLabel = UI.CreateFrame("Text", "Indy_DoNotTrackLabel", configListFrame)
