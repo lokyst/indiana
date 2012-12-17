@@ -21,17 +21,20 @@ local function CreateConfigWindow()
 end
 
 local function CreateConfigFrame(parent)
-    local configFrame = UI.CreateFrame("Frame", "Indy_ConfigFrame", parent)
-    configFrame:SetAllPoints(parent)
+    local configTexture = UI.CreateFrame("Texture", "Indy_ConfigFrame", parent)
+    configTexture:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 55)
+    configTexture:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
+    configTexture:SetTexture("Rift", "token_special_selected_normal.png.dds")
+    configTexture:SetLayer(-1)
 
-    return configFrame
+    return configTexture
 end
 
 local function CreateConfigOptionFrame(parent)
     -- Create a frame to hold the table of options
     local configTableFrame = UI.CreateFrame("Frame", "Indy_ConfigTableFrame", parent)
-    configTableFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", 50, 70)
-    configTableFrame:SetPoint("BOTTOMRIGHT", parent, "CENTERRIGHT", -50, -100)
+    configTableFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 20)
+    configTableFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
 
     return configTableFrame
 end
@@ -53,13 +56,13 @@ end
 local function CreateTrackListFrame(parent)
     -- Create a frame to hold the list management section
     local configListFrame = UI.CreateFrame("Frame", "Indy_ConfigListFrame1", parent)
-    configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 50, -50)
-    configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-50, -70)
+    configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 30, -50)
+    configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-30, -30)
 
     local configListTexture1 = UI.CreateFrame("Texture", "Indy_ConfigListTexture1", configListFrame)
     configListTexture1:SetPoint("TOPLEFT", configListFrame, "TOPLEFT", -5, -5)
     configListTexture1:SetPoint("BOTTOMRIGHT", configListFrame, "BOTTOMCENTER", -20, 5)
-    configListTexture1:SetTexture("Rift", "token_special_nonselected_down.png.dds")
+    configListTexture1:SetTexture("Rift", "inner_black_subwin_04.png.dds")
 
     -- Create a mask for the table of list names
     local configDoNotTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask1", configListTexture1)
@@ -76,7 +79,7 @@ local function CreateTrackListFrame(parent)
     local configListTexture2 = UI.CreateFrame("Texture", "Indy_ConfigListTexture2", configListFrame)
     configListTexture2:SetPoint("TOPRIGHT", configListFrame, "TOPRIGHT", 5, -5)
     configListTexture2:SetPoint("BOTTOMLEFT", configListFrame, "BOTTOMCENTER", 20, 5)
-    configListTexture2:SetTexture("Rift", "token_special_nonselected_down.png.dds")
+    configListTexture2:SetTexture("Rift", "inner_black_subwin_04.png.dds")
 
     -- Create a mask for the table of list names
     local configTrackListMask = UI.CreateFrame("SimpleScrollView", "Indy_ConfigListNamesMask2", configListTexture2)
@@ -92,14 +95,14 @@ local function CreateTrackListFrame(parent)
 
     -- Attach a label to the top of the do not track list box
     local configDoNotTrackLabel = UI.CreateFrame("Text", "Indy_DoNotTrackLabel", configListFrame)
-    configDoNotTrackLabel:SetPoint("BOTTOMLEFT", configDoNotTrackListFrame, "TOPLEFT", 0, 0)
+    configDoNotTrackLabel:SetPoint("BOTTOMLEFT", configDoNotTrackListFrame, "TOPLEFT", 0, -5)
     configDoNotTrackLabel:SetText("DO NOT TRACK")
     configDoNotTrackLabel:SetFontSize(16)
     configDoNotTrackLabel:SetFontColor(0.86,0.81,0.63)
 
     -- Attach a label to the top of the track list box
     local configTrackLabel = UI.CreateFrame("Text", "Indy_TrackLabel", configListFrame)
-    configTrackLabel:SetPoint("BOTTOMLEFT", configTrackListFrame, "TOPLEFT", 0, 0)
+    configTrackLabel:SetPoint("BOTTOMLEFT", configTrackListFrame, "TOPLEFT", 0, -5)
     configTrackLabel:SetText("TRACK")
     configTrackLabel:SetFontSize(16)
     configTrackLabel:SetFontColor(0.86,0.81,0.63)
