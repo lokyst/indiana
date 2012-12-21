@@ -48,6 +48,7 @@ local profile = {
     showTooltips = true,
     showBagCheckButton = true,
     showTooltipBorder = true,
+    unassignedArtifacts = {},
 }
 
 local function Initialize(addonName)
@@ -87,6 +88,8 @@ local function Initialize(addonName)
 
     -- Initialize frames
     Indy:UpdateTooltipBorder()
+
+    Indy:ConvertArtifactTableFrom0To1()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
@@ -247,6 +250,9 @@ local function SlashHandler(arg)
 
     elseif cmd == "showtooltipborder" then
         Indy:ToggleShowTooltipBorder()
+
+    elseif cmd == "assign" then
+        Indy:ShowAssignmentWindow()
 
     elseif cmd == "config" then
         Indy:ShowConfigWindow()

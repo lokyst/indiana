@@ -14,6 +14,8 @@ RunOnStartup = {
     "config.lua",
     "tooltip.lua",
     "bagcheckbutton.lua",
+    "setconversion.lua",
+    "setassignment.lua",
 }
 
 SavedVariables = {
