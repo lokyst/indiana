@@ -89,7 +89,9 @@ local function IndyTooltip(ttType, ttShown, ttBuff)
 
     if not itemDetails then return end
 
-    if not itemDetails.category and not (itemDetails.category:find("misc") and itemDetails.category:find("collectible")) then
+    if not itemDetails.category then return end
+
+    if not (itemDetails.category:find("misc") and itemDetails.category:find("collectible")) then
         return
     end
 
