@@ -14,7 +14,7 @@ ttHasTextFrame:SetVisible(false)
 local padding = 20
 local verticalOffset = 8
 
-local onNextFrameFunc = nil
+local onNextFrameFunc
 local onNextFrameDelay = 2
 
 local function DisplayTooltip(needList, hasList)

@@ -71,7 +71,7 @@ local function CreateTrackListFrame(parent)
     configDoNotTrackListMask:SetBackgroundColor(0, 0, 0, 0)
 
     -- Create a frame to hold the table of list names
-    configDoNotTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame1", configDoNotTrackListMask)
+    local configDoNotTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame1", configDoNotTrackListMask)
     configDoNotTrackListMask:SetContent(configDoNotTrackListFrame)
     configDoNotTrackListMask:SetScrollInterval(20)
     configDoNotTrackListFrame:SetBackgroundColor(0, 0, 0, 0)
@@ -88,7 +88,7 @@ local function CreateTrackListFrame(parent)
     configTrackListMask:SetBackgroundColor(0, 0, 0, 0)
 
     -- Create a frame to hold the table of list names
-    configTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame2", configTrackListMask)
+    local configTrackListFrame = UI.CreateFrame("SimpleList", "Indy_ConfigListNamesFrame2", configTrackListMask)
     configTrackListMask:SetContent(configTrackListFrame)
     configTrackListMask:SetScrollInterval(20)
     configTrackListFrame:SetBackgroundColor(0, 0, 0, 0)
