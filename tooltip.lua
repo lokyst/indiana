@@ -95,7 +95,7 @@ local function IndyTooltip(ttType, ttShown, ttBuff)
         return
     end
 
-    if itemDetails.sell == nil or itemDetails.sell ~= 1 then
+    if itemDetails.stackMax == nil or itemDetails.stackMax ~= 99 then
         return
     end
 
