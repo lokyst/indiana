@@ -31,20 +31,20 @@ local function DisplayTooltip(needList, hasList)
         hasString = "Has: " .. table.concat(hasList, ", ")
     end
 
+    ttNeedsTextFrame:ClearAll()
     ttNeedsTextFrame:SetText(needString)
     ttNeedsTextFrame:SetFontSize(14)
     ttNeedsTextFrame:SetWordwrap(true)
-    ttNeedsTextFrame:ClearAll()
     ttNeedsTextFrame:SetVisible(false)
 
     ttNeedsTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", 10, 10)
     ttNeedsTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -10, 10)
     ttNeedsTextFrame:SetFontColor(1,0,0)
 
+    ttHasTextFrame:ClearAll()
     ttHasTextFrame:SetText(hasString)
     ttHasTextFrame:SetFontSize(14)
     ttHasTextFrame:SetWordwrap(true)
-    ttHasTextFrame:ClearAll()
     ttHasTextFrame:SetVisible(false)
 
     local vHeight = 20
@@ -55,14 +55,14 @@ local function DisplayTooltip(needList, hasList)
         ttNeedsTextFrame:SetVisible(true)
     end
 
+    ttHasTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", 10, vOffset)
+    ttHasTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -10, vOffset)
+    ttHasTextFrame:SetFontColor(0,1,0)
+
     if #hasList > 0 then
         vHeight =  vHeight + ttHasTextFrame:GetHeight()
         ttHasTextFrame:SetVisible(true)
     end
-
-    ttHasTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", 10, vOffset)
-    ttHasTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -10, vOffset)
-    ttHasTextFrame:SetFontColor(0,1,0)
 
     ttFrame:SetHeight(vHeight)
 
