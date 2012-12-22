@@ -50,7 +50,7 @@ local function CreateAssignmentListFrame(parent)
     assignListMask:SetBackgroundColor(0, 0, 0, 0)
 
     -- Create a frame to hold the table of list names
-    assignListFrame = UI.CreateFrame("SimpleList", "Indy_AssignListNamesFrame1", assignListMask)
+    local assignListFrame = UI.CreateFrame("SimpleList", "Indy_AssignListNamesFrame1", assignListMask)
     assignListMask:SetContent(assignListFrame)
     assignListMask:SetScrollInterval(20)
     assignListFrame:SetBackgroundColor(0, 0, 0, 0)
@@ -87,10 +87,9 @@ local function GetUnassignedArtifactsList()
     local nameList = {}
     local idList = {}
 
-    local itemDetails = Inspect.Item.Detail(Indy.unassignedArtifacts)
-
-    for itemId, itemDetail in pairs(itemDetails) do
-        table.insert(nameList, itemDetail.name)
+    for itemId, _ in pairs(Indy.unassignedArtifacts) do
+        local itemDetailName = Indy.artifactDetailCache[itemId].name
+        table.insert(nameList, itemDetailName)
         table.insert(idList, itemId)
     end
 

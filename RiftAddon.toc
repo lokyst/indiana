@@ -16,6 +16,7 @@ RunOnStartup = {
     "bagcheckbutton.lua",
     "setconversion.lua",
     "setassignment.lua",
+    "bulkartifactquery.lua",
 }
 
 SavedVariables = {
