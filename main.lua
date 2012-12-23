@@ -442,16 +442,6 @@ function Indy:CheckBagsForArtifacts()
 
 end
 
-function Indy:ToggleScanAH()
-    self.scanAH = not self.scanAH
-    print("Scan AH for artifacts: " .. tostring(self.scanAH))
-end
-
-function Indy:ToggleScanBags()
-    self.scanBags = not self.scanBags
-    print("Scan bag updates for artifacts: " .. tostring(self.scanBags))
-end
-
 function Indy:ProcessAHData(tableOfAuctions)
     if not tableOfAuctions then
         return
@@ -516,17 +506,6 @@ function Indy:SetTrackStatus(charName, bool)
         return
     end
     self.trackCollectionsForChars[charName] = bool
-end
-
-function Indy:ToggleShowTooltips()
-    self.showTooltips = not self.showTooltips
-    print("Show Tooltips: " .. tostring(self.showTooltips))
-end
-
-function Indy:ToggleShowBagCheckButton()
-    self.showBagCheckButton = not self.showBagCheckButton
-    print("Show Bag Check Button: " .. tostring(self.showBagCheckButton))
-    self:ShowBagCheckButton()
 end
 
 function Indy:PrintHelp()
