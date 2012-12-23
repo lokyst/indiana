@@ -236,19 +236,27 @@ local function BuildConfigWindow()
 
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, configOptionFrame)
 
-    return configWindow
+    return configWindow, configOptionFrame
 end
 
 function Indy:ShowConfigWindow()
     if not self.configWindow then
-        self.configWindow = BuildConfigWindow()
+        self.configWindow, self.configOptionFrame = BuildConfigWindow()
     end
+    Library.LibSimpleWidgets.Layout(CONFIG_TABLE, self.configOptionFrame)
     self.configWindow:SetVisible(true)
+end
+
+function Indy:UpdateConfigWindow()
+    if not self.configWindow then return end
+
+    Library.LibSimpleWidgets.Layout(CONFIG_TABLE, self.configOptionFrame)
 end
 
 function Indy:ToggleShowTooltipBorder()
     self.showTooltipBorder = not self.showTooltipBorder
     print("Show pretty tooltip borders: " .. tostring(self.showTooltipBorder))
+    self:UpdateConfigWindow()
 
     self:UpdateTooltipBorder()
 end
@@ -256,6 +264,7 @@ end
 function Indy:ToggleShowVerboseTooltips()
     self.showVerboseTooltips = not self.showVerboseTooltips
     print("Show verbose tooltips: " .. tostring(self.showVerboseTooltips))
+    self:UpdateConfigWindow()
 
     Indy:UpdateTooltip()
 end
@@ -263,21 +272,27 @@ end
 function Indy:ToggleScanAH()
     self.scanAH = not self.scanAH
     print("Scan AH for artifacts: " .. tostring(self.scanAH))
+    self:UpdateConfigWindow()
 end
 
 function Indy:ToggleScanBags()
     self.scanBags = not self.scanBags
     print("Scan bag updates for artifacts: " .. tostring(self.scanBags))
+    self:UpdateConfigWindow()
 end
 
 function Indy:ToggleShowTooltips()
     self.showTooltips = not self.showTooltips
     print("Show Tooltips: " .. tostring(self.showTooltips))
+    self:UpdateConfigWindow()
+
     Indy:UpdateTooltip()
 end
 
 function Indy:ToggleShowBagCheckButton()
     self.showBagCheckButton = not self.showBagCheckButton
     print("Show Bag Check Button: " .. tostring(self.showBagCheckButton))
+    self:UpdateConfigWindow()
+
     self:ShowBagCheckButton()
 end
