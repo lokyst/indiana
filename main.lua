@@ -42,6 +42,7 @@ end
 
 local profile = {
     trackCollectionsForChars = {},
+    artifactTableVersion = 0,
     artifactTable = AllArtifactIds(),
     scanBags = false,
     scanAH = false,
@@ -83,10 +84,12 @@ local function Initialize(addonName)
         Indy.trackCollectionsForChars[charName] = true
     end
 
-    Indy:ShowBagCheckButton()
+    -- Perform table conversions
+    Indy.artifactTable = Indy:ConvertArtifactTableFrom0To1()
 
     -- Initialize frames
     Indy:UpdateTooltipBorder()
+    Indy:ShowBagCheckButton()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
