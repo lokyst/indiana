@@ -421,21 +421,31 @@ function Indy:CheckBagsForArtifacts()
     local slots = Utility.Item.Slot.All()
     local itemIds = Inspect.Item.List(slots)
     local tableOfItemDetails = Inspect.Item.Detail(itemIds)
-    local artifactId
-    local artifactName = ""
-    local charList = {}
 
     CheckForUnknownItems(itemIds)
 
     for itemId, itemDetails in pairs(tableOfItemDetails) do
         if itemDetails.category and itemDetails.category:find("collectible") then
-            artifactId = itemDetails.type
-            artifactName = itemDetails.name
+            local artifactId = itemDetails.type
+            local artifactName = itemDetails.name
 
             -- Print a list of chars who need this item
-            charList = self:WhoNeedsItem(artifactId)
+            local needList = {}
+            local charList, itemCounts, setCount = Indy:WhoNeedsItem(artifactId)
             if #charList > 0 then
-                print("[" .. artifactName .. "] needed by: " .. table.concat(charList, ", "))
+                if setCount == 0 then
+                    setCount = "??"
+                end
+
+                for i, v in ipairs(charList) do
+                    local verbose = ""
+                    if Indy.showVerboseTooltips then
+                        verbose = " (" .. itemCounts[i] .. "/" .. setCount .. ")"
+                    end
+                    table.insert(needList, charList[i] .. verbose)
+                end
+
+                print("[" .. artifactName .. "] needed by: " .. table.concat(needList, ", "))
             end
         end
     end
@@ -487,7 +497,7 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local auctionBid
     local auctionBuyout
 
-    for auctionId, charList in pairs(tableOfAuctionsByChar) do
+    for auctionId, _ in pairs(tableOfAuctionsByChar) do
         auctionDetails = Inspect.Auction.Detail(auctionId)
         auctionBid = auctionDetails.bid
         auctionBuyout = auctionDetails.buyout
@@ -495,8 +505,22 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
         itemDetails = Inspect.Item.Detail(itemId)
         artifactName = itemDetails.name
 
+        local needList = {}
+        local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type)
         if #charList > 0 then
-            print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(charList, ", "))
+            if setCount == 0 then
+                setCount = "??"
+            end
+
+            for i, v in ipairs(charList) do
+                local verbose = ""
+                if Indy.showVerboseTooltips then
+                    verbose = " (" .. itemCounts[i] .. "/" .. setCount .. ")"
+                end
+                table.insert(needList, charList[i] .. verbose)
+            end
+
+            print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(needList, ", "))
         end
     end
 end
