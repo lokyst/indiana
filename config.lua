@@ -199,6 +199,16 @@ local CONFIG_TABLE = {
         get = function() return Indy.showTooltipBorder end,
         set = function(value) return Indy:ToggleShowTooltipBorder() end,
     },
+    showVerboseTooltips = {
+        order = 12,
+        type = "checkbox",
+        label = "Show verbose tooltips",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.showVerboseTooltips end,
+        set = function(value) return Indy:ToggleShowVerboseTooltips() end,
+    },
+
     scanAH = {
         order = 20,
         type = "checkbox",
@@ -242,4 +252,9 @@ function Indy:ToggleShowTooltipBorder()
     print("Show pretty tooltip borders: " .. tostring(self.showTooltipBorder))
 
     self:UpdateTooltipBorder()
+end
+
+function Indy:ToggleShowVerboseTooltips()
+    self.showVerboseTooltips = not self.showVerboseTooltips
+    print("Show verbose tooltips: " .. tostring(self.showVerboseTooltips))
 end

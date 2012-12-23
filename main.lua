@@ -47,6 +47,7 @@ local profile = {
     scanBags = false,
     scanAH = false,
     showTooltips = true,
+    showVerboseTooltips = true,
     showBagCheckButton = true,
     showTooltipBorder = true,
 }
@@ -270,6 +271,9 @@ local function SlashHandler(arg)
 
     elseif cmd == "showtooltipborder" then
         Indy:ToggleShowTooltipBorder()
+
+    elseif cmd == "showverbosetooltips" then
+        Indy:ToggleShowVerboseTooltips()
 
     elseif cmd == "config" then
         Indy:ShowConfigWindow()
@@ -539,6 +543,7 @@ function Indy:PrintHelp()
     print("/indy scanah - toggle scanning AH for artifacts  (" .. tostring(self.scanBags) .. ")")
     print("/indy showtooltips - toggle display of tooltips for artifacts (" .. tostring(self.showTooltips) .. ")")
     print("/indy showtooltipborder - toggle display of pretty tooltip borders (" .. tostring(self.showTooltipBorder) .. ")")
+    print("/indy showverbosetooltips - toggle display of verbose tooltips (" .. tostring(self.showVerboseTooltips) .. ")")
     print("/indy config - opens the configuration window")
     print("/indy help - prints this message")
 end

@@ -113,7 +113,11 @@ local function IndyTooltip(rType, rShown, rBuff)
     end
 
     for i, v in ipairs(charList) do
-        table.insert(needList, charList[i] .. " (" .. itemCounts[i] .. "/" .. setCount .. ")")
+        local verbose = ""
+        if Indy.showVerboseTooltips then
+            verbose = " (" .. itemCounts[i] .. "/" .. setCount .. ")"
+        end
+        table.insert(needList, charList[i] .. verbose)
     end
 
     --local hasList = Indy:WhoHasItem(itemDetails.type)
@@ -125,7 +129,11 @@ local function IndyTooltip(rType, rShown, rBuff)
     end
 
     for i, v in ipairs(charList) do
-        table.insert(hasList, charList[i] .. " (" .. itemCounts[i] .. "/" .. setCount .. ")")
+        local verbose = ""
+        if Indy.showVerboseTooltips then
+            verbose = " (" .. itemCounts[i] .. "/" .. setCount .. ")"
+        end
+        table.insert(hasList, charList[i] .. verbose)
     end
 
     if #needList > 0 or #hasList > 0 then
