@@ -257,7 +257,7 @@ function Indy:ToggleShowVerboseTooltips()
     self.showVerboseTooltips = not self.showVerboseTooltips
     print("Show verbose tooltips: " .. tostring(self.showVerboseTooltips))
 
-    self.IndyTooltip()
+    Indy:UpdateTooltip()
 end
 
 function Indy:ToggleScanAH()
@@ -273,6 +273,7 @@ end
 function Indy:ToggleShowTooltips()
     self.showTooltips = not self.showTooltips
     print("Show Tooltips: " .. tostring(self.showTooltips))
+    Indy:UpdateTooltip()
 end
 
 function Indy:ToggleShowBagCheckButton()

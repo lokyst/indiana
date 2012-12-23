@@ -73,12 +73,13 @@ end
 local ttType, ttShown, ttBuff
 local function IndyTooltip(rType, rShown, rBuff)
     if not Indy.showTooltips then
+        ttFrame:SetVisible(false)
         return
     end
 
-    ttType = rType or ttType
-    ttShown = rShown or ttShown
-    ttBuff = rBuff or ttBuff
+    ttType = rType
+    ttShown = rShown
+    ttBuff = rBuff
 
     context:SetVisible(false)
     ttFrame:SetVisible(false)
@@ -163,7 +164,10 @@ function Indy:UpdateTooltipBorder()
     end
 end
 
-Indy.IndyTooltip = IndyTooltip
+
+function Indy:UpdateTooltip()
+    IndyTooltip(ttType, ttShown, ttBuff)
+end
 
 table.insert(Event.Tooltip, {IndyTooltip, "Indy", "IndyTooltip"})
 table.insert(Event.System.Update.Begin, {OnFrameUpdate, "Indy", "OnFrameUpdate"})

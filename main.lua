@@ -205,7 +205,7 @@ local function SlashHandler(arg)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
         local artifactName = itemDetails.name
-        Indy.IndyTooltip()
+        Indy:UpdateTooltip()
         print(Indy.charName .. " has collected [" .. artifactName .. "]")
 
     elseif cmd == "deleteitem" then
@@ -218,7 +218,7 @@ local function SlashHandler(arg)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
         local artifactName = itemDetails.name
-        Indy.IndyTooltip()
+        Indy:UpdateTooltip()
         print(Indy.charName .. " has deleted [" .. artifactName .. "]")
 
     elseif cmd == "whohasitem" then
