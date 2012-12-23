@@ -109,7 +109,7 @@ local function CheckForUnknownItems(tableOfItemIds)
             artifactName = itemDetails.name
 
             -- Check if there is a record of it in our artifact list
-            if not Indy.artifactTable[artifactId] then
+            if artifactId ~= "" and not Indy.artifactTable[artifactId] then
                 Indy.artifactTable[artifactId] = {}
                 print("New artifact recorded: [" .. artifactName .. "]")
             end
