@@ -1,5 +1,5 @@
 --watchdog is disabled during handling of Event.Addon.Startup.End.
-
+--[[
 local function ArtifactQuery()
     --Command.System.Watchdog.Quiet()
     local startTime = Inspect.Time.Real()
@@ -32,8 +32,8 @@ end
 
 
 --table.insert(Event.Addon.Startup.End, {ArtifactQuery, "Indy", "ArtifactQuery"})
-
-local function ArtifactQuery2()
+--]]
+--[[local function ArtifactQuery2()
     print("Starting artifact query")
     local artifactDetailCache = {}
     local failedArtifactIDs = {}
@@ -97,4 +97,78 @@ local function ReleaseTheKraken()
     end
 end
 
-table.insert(Event.System.Update.End, {ReleaseTheKraken, "Indy", "ArtifactQuery"})
+table.insert(Event.System.Update.End, {ReleaseTheKraken, "Indy", "ArtifactQuery"})--]]
+
+local function ArtifactNameQuery()
+    print("Starting artifact name query")
+    local failedItemQueries = {}
+
+    local itemCounter = 1
+    local cycleCounter = 1
+    local failedItems = 0
+
+    for itemId, _ in pairs(Indy.unnamedArtifacts) do
+        local success
+        local failCounter = 1
+        repeat
+            if cycleCounter % 3 == 0 then
+                --local startTime = Inspect.Time.Real()
+                success, itemDetail = pcall(Inspect.Item.Detail, itemId)
+                --print("ProcessTime: " .. (Inspect.Time.Real() - startTime))
+
+                if success then
+                    Indy.newList[itemId].name =  itemDetail.name
+                    Indy.unnamedArtifacts[itemId] = nil
+
+                    itemCounter = itemCounter + 1
+                else
+
+                    failCounter = failCounter + 1
+                end
+
+                if failCounter > 50 then
+                    failedItemQueries[itemId] = true
+                    failedItems = failedItems + 1
+                    success = true
+                end
+
+                --print("Cycles processed: ".. cycleCounter .. " Items Processed: " .. itemCounter .. " Failed: " .. failedItems)
+            end
+
+            if cycleCounter % 1 == 0 then
+                coroutine.yield(false)
+            end
+
+            cycleCounter = cycleCounter + 1
+        until success
+    end
+
+    Indy.artifactTableCount = itemCounter
+    Indy.artifactCycleCount = cycleCounter
+    Indy.failedItemQueries = failedItemQueries
+
+    print("Artifact name query complete")
+    return true
+end
+
+myThreadId = coroutine.create(function ()
+    return ArtifactNameQuery()
+end)
+
+local function ReleaseTheKraken()
+    if myThreadId == nil then
+        return
+    end
+
+    --print("Resuming artifact query")
+    local success, result = coroutine.resume(myThreadId)
+    if not success then
+        print("Artifact query failed: "..result)
+        myThreadId = nil
+    elseif result then
+        print("Artifact name query complete. Exiting co-routine.")
+        myThreadId = nil
+    end
+end
+
+table.insert(Event.System.Update.End, {ReleaseTheKraken, "Indy", "ArtifactNameQuery"})

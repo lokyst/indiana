@@ -49,6 +49,7 @@ local profile = {
     showBagCheckButton = true,
     showTooltipBorder = true,
     unassignedArtifacts = {},
+    unnamedArtifacts = {},
 }
 
 local function Initialize(addonName)
@@ -89,7 +90,7 @@ local function Initialize(addonName)
     -- Initialize frames
     Indy:UpdateTooltipBorder()
 
-    Indy:ConvertArtifactTableFrom0To1()
+    Indy.newList = Indy:ConvertArtifactTableFrom0To1()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
@@ -305,7 +306,7 @@ function Indy:AddItemToChar(artifactId)
     CheckForUnknownItems({artifactId})
 
     if self.artifactTable[artifactId] ~= nil then
-        self.artifactTable[artifactId][charName] = true
+        self.artifactTable[artifactId].charList[charName] = true
     end
 end
 
@@ -318,7 +319,7 @@ function Indy:DeleteItemFromChar(artifactId)
     CheckForUnknownItems({artifactId})
 
     if self.artifactTable[artifactId] ~= nil then
-        self.artifactTable[artifactId][charName] = nil
+        self.artifactTable[artifactId].charList[charName] = nil
     end
 end
 
@@ -328,7 +329,7 @@ function Indy:WhoHasItem(artifactId)
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
-                local statusCollected = self.artifactTable[artifactId][name]
+                local statusCollected = self.artifactTable[artifactId].charList[name]
                 if statusCollected then
                     table.insert(charList, name)
                 end
@@ -345,7 +346,7 @@ function Indy:WhoNeedsItem(artifactId)
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
-                local statusCollected = self.artifactTable[artifactId][name]
+                local statusCollected = self.artifactTable[artifactId].charList[name]
                 if not statusCollected then
                     table.insert(charList, name)
                 end
