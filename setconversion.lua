@@ -27,7 +27,7 @@ function Indy:ConvertArtifactTableFrom0To1()
         newTable[artifactId] = newCharList
 
     end
-    
+
     Indy.artifactTableVersion = 1
     return newTable
 

@@ -70,10 +70,15 @@ local function DisplayTooltip(needList, hasList)
     context:SetVisible(true)
 end
 
-local function IndyTooltip(ttType, ttShown, ttBuff)
+local ttType, ttShown, ttBuff
+local function IndyTooltip(rType, rShown, rBuff)
     if not Indy.showTooltips then
         return
     end
+
+    ttType = rType or ttType
+    ttShown = rShown or ttShown
+    ttBuff = rBuff or ttBuff
 
     context:SetVisible(false)
     ttFrame:SetVisible(false)
@@ -99,8 +104,29 @@ local function IndyTooltip(ttType, ttShown, ttBuff)
         return
     end
 
-    local needList = Indy:WhoNeedsItem(itemDetails.type)
-    local hasList = Indy:WhoHasItem(itemDetails.type)
+    --local needList = Indy:WhoNeedsItem(itemDetails.type)
+    local needList = {}
+    local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type)
+
+    if setCount == 0 then
+        setCount = "??"
+    end
+
+    for i, v in ipairs(charList) do
+        table.insert(needList, charList[i] .. " (" .. itemCounts[i] .. "/" .. setCount .. ")")
+    end
+
+    --local hasList = Indy:WhoHasItem(itemDetails.type)
+    local hasList = {}
+    charList, itemCounts, setCount = Indy:WhoHasItem(itemDetails.type)
+
+    if setCount == 0 then
+        setCount = "??"
+    end
+
+    for i, v in ipairs(charList) do
+        table.insert(hasList, charList[i] .. " (" .. itemCounts[i] .. "/" .. setCount .. ")")
+    end
 
     if #needList > 0 or #hasList > 0 then
         onNextFrameFunc = function() DisplayTooltip(needList, hasList) end
@@ -128,6 +154,8 @@ function Indy:UpdateTooltipBorder()
         ttFrame.__lsw_border = nil
     end
 end
+
+Indy.IndyTooltip = IndyTooltip
 
 table.insert(Event.Tooltip, {IndyTooltip, "Indy", "IndyTooltip"})
 table.insert(Event.System.Update.Begin, {OnFrameUpdate, "Indy", "OnFrameUpdate"})

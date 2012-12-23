@@ -204,6 +204,7 @@ local function SlashHandler(arg)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
         local artifactName = itemDetails.name
+        Indy.IndyTooltip()
         print(Indy.charName .. " has collected [" .. artifactName .. "]")
 
     elseif cmd == "deleteitem" then
@@ -216,19 +217,38 @@ local function SlashHandler(arg)
 
         local itemDetails = Inspect.Item.Detail(artifactId)
         local artifactName = itemDetails.name
+        Indy.IndyTooltip()
         print(Indy.charName .. " has deleted [" .. artifactName .. "]")
 
     elseif cmd == "whohasitem" then
         local artifactId = InspectTooltip()
-        local charList = Indy:WhoHasItem(artifactId)
+        local charList, itemCounts, setCount = Indy:WhoHasItem(artifactId)
 
-        print(tostring(table.concat(charList, ", ")))
+        if setCount == 0 then
+            setCount = "??"
+        end
+
+        local hasStrings = {}
+        for i, v in ipairs(charList) do
+            table.insert(hasStrings, charList[i] .. "(" .. itemCounts[i] .. "/" .. setCount .. ")")
+        end
+
+        print(tostring(table.concat(hasStrings, ", ")))
 
     elseif cmd == "whoneedsitem" then
         local artifactId = InspectTooltip()
-        local charList = Indy:WhoNeedsItem(artifactId)
+        local charList, itemCounts, setCount = Indy:WhoNeedsItem(artifactId)
 
-        print(tostring(table.concat(charList, ", ")))
+        if setCount == 0 then
+            setCount = "??"
+        end
+
+        local needsStrings = {}
+        for i, v in ipairs(charList) do
+            table.insert(needsStrings, charList[i] .. "(" .. itemCounts[i] .. "/" .. setCount .. ")")
+        end
+
+        print(tostring(table.concat(needsStrings, ", ")))
 
     elseif cmd == "dotrack" then
         Indy:AddCharToTrackList(Indy.charName)
@@ -302,7 +322,19 @@ function Indy:AddItemToChar(artifactId)
     CheckForUnknownItems({artifactId})
 
     if self.artifactTable[artifactId] ~= nil then
-        self.artifactTable[artifactId][charName] = true
+        local _, setCount = self:FindArtifactSetsContainingId(artifactId)
+
+        if not self.artifactTable[artifactId][charName] then
+            self.artifactTable[artifactId][charName] = 0
+        end
+
+        if setCount > 0 then
+            if self.artifactTable[artifactId][charName] < setCount then
+                self.artifactTable[artifactId][charName] = self.artifactTable[artifactId][charName] + 1
+            end
+        else
+            self.artifactTable[artifactId][charName] = self.artifactTable[artifactId][charName] + 1
+        end
     end
 end
 
@@ -315,42 +347,62 @@ function Indy:DeleteItemFromChar(artifactId)
     CheckForUnknownItems({artifactId})
 
     if self.artifactTable[artifactId] ~= nil then
-        self.artifactTable[artifactId][charName] = nil
+        local _, setCount = self:FindArtifactSetsContainingId(artifactId)
+
+        if not self.artifactTable[artifactId][charName] then
+            return
+        end
+
+        if self.artifactTable[artifactId][charName] > 0 then
+            self.artifactTable[artifactId][charName] = self.artifactTable[artifactId][charName] - 1
+        end
+
+        if self.artifactTable[artifactId][charName] == 0 then
+            self.artifactTable[artifactId][charName] = nil
+        end
     end
 end
 
 function Indy:WhoHasItem(artifactId)
     local charList = {}
+    local itemCounts = {}
+    local _, setCount = self:FindArtifactSetsContainingId(artifactId)
 
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
                 local statusCollected = self.artifactTable[artifactId][name]
-                if statusCollected then
+                if statusCollected and statusCollected >= setCount then
                     table.insert(charList, name)
+                    table.insert(itemCounts, statusCollected)
                 end
             end
         end
     end
 
-    return charList
+    return charList, itemCounts, setCount
 end
 
 function Indy:WhoNeedsItem(artifactId)
     local charList = {}
+    local itemCounts = {}
+    local _, setCount = self:FindArtifactSetsContainingId(artifactId)
 
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
             if trackStatus then
                 local statusCollected = self.artifactTable[artifactId][name]
-                if not statusCollected then
+                if statusCollected == nil then statusCollected = 0 end
+
+                if (statusCollected < setCount) or (setCount == 0 and statusCollected == 0) then
                     table.insert(charList, name)
+                    table.insert(itemCounts, statusCollected)
                 end
             end
         end
     end
 
-    return charList
+    return charList, itemCounts, setCount
 end
 
 function Indy:AddCharToTrackList(charName)
