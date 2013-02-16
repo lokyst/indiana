@@ -95,12 +95,10 @@ local function Initialize(addonName)
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
 end
 
-local function CheckForUnknownItems(tableOfItemIds)
+local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
     local itemDetails
     local artifactId
     local artifactName = ""
-
-    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
 
     for _, itemDetails in pairs(tableOfItemDetails) do
         -- Check if it is a collectible item
@@ -119,6 +117,12 @@ local function CheckForUnknownItems(tableOfItemIds)
             end
         end
     end
+end
+
+local function CheckForUnknownItems(tableOfItemIds)
+    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
+
+    CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 end
 
 local function OnTooltipChange(ttType, ttShown, ttBuff)
@@ -422,7 +426,8 @@ function Indy:CheckBagsForArtifacts()
     local itemIds = Inspect.Item.List(slots)
     local tableOfItemDetails = Inspect.Item.Detail(itemIds)
 
-    CheckForUnknownItems(itemIds)
+    --CheckForUnknownItems(itemIds)
+    CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 
     for itemId, itemDetails in pairs(tableOfItemDetails) do
         if itemDetails.category and itemDetails.category:find("collectible") then
