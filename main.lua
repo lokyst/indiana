@@ -142,7 +142,9 @@ local function InspectTooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
         itemDetails = Inspect.Item.Detail(ttShown)
-        artifactId = itemDetails.type
+        if itemDetails then
+            artifactId = itemDetails.type
+        end
     end
 
     return artifactId
