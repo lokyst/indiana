@@ -52,6 +52,7 @@ local profile = {
     showTooltipBorder = true,
     hasColor = {0,1,0,1},
     needColor = {1,0,0,1},
+    charPerLine = false,
 }
 
 local function Initialize(addonName)

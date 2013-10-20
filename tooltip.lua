@@ -18,6 +18,14 @@ local onNextFrameFunc
 local onNextFrameDelay = 2
 
 local function DisplayTooltip(needList, hasList)
+    local sepString = ""
+
+    if Indy.charPerLine then
+        sepString = "\n"
+    else
+        sepString = ", "
+    end
+
     ttFrame:SetPoint("TOPLEFT", UI.Native.Tooltip, "BOTTOMLEFT", 0, 5)
     ttFrame:SetPoint("TOPRIGHT", UI.Native.Tooltip, "BOTTOMRIGHT", 0, 5)
 
@@ -25,10 +33,14 @@ local function DisplayTooltip(needList, hasList)
     local hasString = ""
 
     if #needList > 0 then
-        needString = "Needs: " .. table.concat(needList, ", ")
+        needString = "Needs: "
+        if Indy.charPerLine then needString = needString .. "\n" end
+        needString = needString .. table.concat(needList, sepString)
     end
     if #hasList > 0 then
-        hasString = "Has: " .. table.concat(hasList, ", ")
+        hasString = "Has: "
+        if Indy.charPerLine then hasString = hasString .. "\n" end
+        hasString = hasString .. table.concat(hasList, sepString)
     end
 
     ttNeedsTextFrame:ClearAll()

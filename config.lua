@@ -65,7 +65,7 @@ end
 local function CreateTrackListFrame(parent)
     -- Create a frame to hold the list management section
     local configListFrame = UI.CreateFrame("Frame", "Indy_ConfigListFrame1", parent)
-    configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 30, -50)
+    configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 30, -30)
     configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-30, -30)
 
     local configListTexture1 = UI.CreateFrame("Texture", "Indy_ConfigListTexture1", configListFrame)
@@ -289,7 +289,7 @@ local function CreateConfigColorFrame(parent)
 
     parent = configTexture
 
-    -- Create a frame to hold the table of options
+    -- Create a frame to hold color options
     local configColorFrame = UI.CreateFrame("Frame", "Indy_ConfigColorFrame", parent)
     configColorFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 20)
     configColorFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
@@ -362,6 +362,15 @@ local CONFIG_TABLE = {
         width = "full",
         get = function() return Indy.showBagCheckButton end,
         set = function(value) return Indy:ToggleShowBagCheckButton() end,
+    },
+    charPerLine = {
+        order = 40,
+        type = "checkbox",
+        label = "Show single character per line",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.charPerLine end,
+        set = function(value) return Indy:ToggleCharPerLine() end,
     },
 }
 
@@ -453,4 +462,10 @@ function Indy:ToggleShowBagCheckButton()
     self:UpdateConfigWindow()
 
     self:ShowBagCheckButton()
+end
+
+function Indy:ToggleCharPerLine()
+    self.charPerLine = not self.charPerLine
+    print("Show single character per line: " .. tostring(self.charPerLine))
+    self:UpdateConfigWindow()
 end
