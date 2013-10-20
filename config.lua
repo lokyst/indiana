@@ -297,7 +297,7 @@ local function CreateConfigColorFrame(parent)
     -- Set Has Color
     local configColorHasLabel = UI.CreateFrame("Text", "Indy_ConfigColorHasText", configColorFrame)
     configColorHasLabel:SetPoint("TOPLEFT", configColorFrame, "TOPLEFT", 20, 20)
-    configColorHasLabel:SetText("SET COLOR FOR ACQUIRED ARTIFACTS")
+    configColorHasLabel:SetText("ACQUIRED ARTIFACTS")
     configColorHasLabel:SetFontSize(16)
     configColorHasLabel:SetFontColor(0.86,0.81,0.63)
 
@@ -307,7 +307,7 @@ local function CreateConfigColorFrame(parent)
     -- Set Needs Color
     local configColorNeedLabel = UI.CreateFrame("Text", "Indy_ConfigColorNeedText", configColorFrame)
     configColorNeedLabel:SetPoint("TOPLEFT", hasColorWidget.frame, "TOPLEFT", 0, 24)
-    configColorNeedLabel:SetText("SET COLOR FOR NEEDED ARTIFACTS")
+    configColorNeedLabel:SetText("NEEDED ARTIFACTS")
     configColorNeedLabel:SetFontSize(16)
     configColorNeedLabel:SetFontColor(0.86,0.81,0.63)
 
