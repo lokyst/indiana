@@ -39,7 +39,7 @@ local function DisplayTooltip(needList, hasList)
 
     ttNeedsTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", 10, 10)
     ttNeedsTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -10, 10)
-    ttNeedsTextFrame:SetFontColor(1,0,0)
+    ttNeedsTextFrame:SetFontColor(unpack(Indy.needColor))
 
     ttHasTextFrame:ClearAll()
     ttHasTextFrame:SetText(hasString)
@@ -57,7 +57,7 @@ local function DisplayTooltip(needList, hasList)
 
     ttHasTextFrame:SetPoint("TOPLEFT", ttFrame, "TOPLEFT", 10, vOffset)
     ttHasTextFrame:SetPoint("TOPRIGHT", ttFrame, "TOPRIGHT", -10, vOffset)
-    ttHasTextFrame:SetFontColor(0,1,0)
+    ttHasTextFrame:SetFontColor(unpack(Indy.hasColor))
 
     if #hasList > 0 then
         vHeight =  vHeight + ttHasTextFrame:GetHeight()

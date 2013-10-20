@@ -6,7 +6,7 @@ local function CreateConfigWindow()
     local buttonWidth = 135
     -- Make the dialog window 3 buttons and some padding wide
     baseConfigWindow:SetWidth(buttonWidth*3 + 40)
-    baseConfigWindow:SetHeight(551)
+    baseConfigWindow:SetHeight(600)
 
     -- Add a close button to the top right corner
     baseConfigWindow:SetCloseButtonVisible(true)
@@ -18,6 +18,15 @@ local function CreateConfigWindow()
     baseConfigWindow:SetVisible(false)
 
     return baseConfigWindow
+end
+
+local function CreateConfigTabView(parent)
+    local configTabView = UI.CreateFrame("SimpleTabView", "Indy_ConfigTabView", parent)
+
+    configTabView:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 55)
+    configTabView:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
+
+    return configTabView
 end
 
 local function CreateConfigFrame(parent)
@@ -180,6 +189,134 @@ local function CreateTrackListFrame(parent)
 
 end
 
+local function SaveHasColor()
+    local rgb = {
+        tonumber(Indy.hasColorWidget.r:GetText()) or 0,
+        tonumber(Indy.hasColorWidget.g:GetText()) or 0,
+        tonumber(Indy.hasColorWidget.b:GetText()) or 0,
+        1
+    }
+    Indy.hasColor = rgb
+end
+
+local function RefreshHasSample()
+    local r, g, b  = unpack(Indy.hasColor)
+    Indy.hasColorWidget.sample:SetFontColor(r or 0, g or 0, b or 0)
+end
+
+local function SaveNeedColor()
+    local rgb = {
+        tonumber(Indy.needColorWidget.r:GetText()) or 0,
+        tonumber(Indy.needColorWidget.g:GetText()) or 0,
+        tonumber(Indy.needColorWidget.b:GetText()) or 0,
+        1
+    }
+    Indy.needColor = rgb
+end
+
+local function RefreshNeedSample()
+    local r, g, b  = unpack(Indy.needColor)
+    Indy.needColorWidget.sample:SetFontColor(r or 0, g or 0, b or 0)
+end
+
+local function CreateColorWidget(parent, saveFn, refreshFn)
+    local colorWidgetFrame = UI.CreateFrame("Frame", "Indy_ColorWidgetFrame", parent)
+
+    local colorWidgetLabelR = UI.CreateFrame("Text", "Indy_ColorWidgetText1R", colorWidgetFrame)
+    colorWidgetLabelR:SetPoint("TOPLEFT", colorWidgetFrame, "TOPLEFT", 0, 0)
+    colorWidgetLabelR:SetText("R:")
+    local colorWidgetInputR = UI.CreateFrame("RiftTextfield", "Indy_ColorWidgetInputR", colorWidgetFrame)
+    colorWidgetInputR:SetPoint("TOPLEFT", colorWidgetLabelR, "TOPRIGHT", 5, 0)
+    colorWidgetInputR:SetWidth(40)
+    colorWidgetInputR:SetBackgroundColor(0,0,0,1)
+    colorWidgetInputR:SetText("0.5")
+
+    local colorWidgetLabelG = UI.CreateFrame("Text", "Indy_ColorWidgetText1G", colorWidgetFrame)
+    colorWidgetLabelG:SetPoint("TOPLEFT", colorWidgetInputR, "TOPRIGHT", 10, 0)
+    colorWidgetLabelG:SetText("G:")
+    local colorWidgetInputG = UI.CreateFrame("RiftTextfield", "Indy_ColorWidgetInputG", colorWidgetFrame)
+    colorWidgetInputG:SetPoint("TOPLEFT", colorWidgetLabelG, "TOPRIGHT", 5, 0)
+    colorWidgetInputG:SetWidth(40)
+    colorWidgetInputG:SetBackgroundColor(0,0,0,1)
+    colorWidgetInputG:SetText("0.5")
+
+    local colorWidgetLabelB = UI.CreateFrame("Text", "Indy_ColorWidgetText1B", colorWidgetFrame)
+    colorWidgetLabelB:SetPoint("TOPLEFT", colorWidgetInputG, "TOPRIGHT", 10, 0)
+    colorWidgetLabelB:SetText("B:")
+    local colorWidgetInputB = UI.CreateFrame("RiftTextfield", "Indy_ColorWidgetInputB", colorWidgetFrame)
+    colorWidgetInputB:SetPoint("TOPLEFT", colorWidgetLabelB, "TOPRIGHT", 5, 0)
+    colorWidgetInputB:SetWidth(40)
+    colorWidgetInputB:SetBackgroundColor(0,0,0,1)
+    colorWidgetInputB:SetText("0.5")
+
+    local colorWidgetSampleLabel = UI.CreateFrame("Text", "Indy_ColorWidgetSampleText1", colorWidgetFrame)
+    colorWidgetSampleLabel:SetPoint("TOPLEFT", colorWidgetInputB, "TOPRIGHT", 10, 0)
+    colorWidgetSampleLabel:SetText("Sample")
+    colorWidgetSampleLabel:SetFontColor(1,0,0,1)
+    colorWidgetSampleLabel:SetFontSize(14)
+    colorWidgetSampleLabel:SetBackgroundColor(0,0,0,1)
+
+    colorWidgetInputR.Event.TextfieldChange = function()
+        saveFn()
+        refreshFn()
+    end
+    colorWidgetInputG.Event.TextfieldChange = function()
+        saveFn()
+        refreshFn()
+    end
+    colorWidgetInputB.Event.TextfieldChange = function()
+        saveFn()
+        refreshFn()
+    end
+
+    local colorWidget = {
+        frame = colorWidgetFrame,
+        r = colorWidgetInputR,
+        g = colorWidgetInputG,
+        b = colorWidgetInputB,
+        sample = colorWidgetSampleLabel,
+    }
+
+    return colorWidget
+end
+
+local function CreateConfigColorFrame(parent)
+    local configTexture = UI.CreateFrame("Texture", "Indy_ConfigColorFrameTexture", parent)
+    configTexture:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 55)
+    configTexture:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
+    configTexture:SetTexture("Rift", "token_special_selected_normal.png.dds")
+    configTexture:SetLayer(-1)
+
+    parent = configTexture
+
+    -- Create a frame to hold the table of options
+    local configColorFrame = UI.CreateFrame("Frame", "Indy_ConfigColorFrame", parent)
+    configColorFrame:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, 20)
+    configColorFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", -20, -20)
+
+    -- Set Has Color
+    local configColorHasLabel = UI.CreateFrame("Text", "Indy_ConfigColorHasText", configColorFrame)
+    configColorHasLabel:SetPoint("TOPLEFT", configColorFrame, "TOPLEFT", 20, 20)
+    configColorHasLabel:SetText("SET COLOR FOR ACQUIRED ARTIFACTS")
+    configColorHasLabel:SetFontSize(16)
+    configColorHasLabel:SetFontColor(0.86,0.81,0.63)
+
+    local hasColorWidget = CreateColorWidget(configColorFrame, SaveHasColor, RefreshHasSample)
+    hasColorWidget.frame:SetPoint("TOPLEFT", configColorHasLabel, "TOPLEFT", 0, 24)
+
+    -- Set Needs Color
+    local configColorNeedLabel = UI.CreateFrame("Text", "Indy_ConfigColorNeedText", configColorFrame)
+    configColorNeedLabel:SetPoint("TOPLEFT", hasColorWidget.frame, "TOPLEFT", 0, 24)
+    configColorNeedLabel:SetText("SET COLOR FOR NEEDED ARTIFACTS")
+    configColorNeedLabel:SetFontSize(16)
+    configColorNeedLabel:SetFontColor(0.86,0.81,0.63)
+
+    local needColorWidget = CreateColorWidget(configColorFrame, SaveNeedColor, RefreshNeedSample)
+    needColorWidget.frame:SetPoint("TOPLEFT", configColorNeedLabel, "TOPLEFT", 0, 24)
+
+    return configTexture, hasColorWidget, needColorWidget
+end
+
 local CONFIG_TABLE = {
     showTooltips = {
         order = 10,
@@ -233,17 +370,38 @@ local function BuildConfigWindow()
     local configFrame = CreateConfigFrame(configWindow)
     local configOptionFrame = CreateConfigOptionFrame(configFrame)
     local configListFrame = CreateTrackListFrame(configFrame)
+    local configColorFrame, hasColorWidget, needColorWidget = CreateConfigColorFrame(configWindow)
+
+    -- Set up tab view
+    local configTabView = CreateConfigTabView(configWindow)
+    configTabView:AddTab("General", configFrame)
+    configTabView:AddTab("Colors", configColorFrame)
 
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, configOptionFrame)
 
-    return configWindow, configOptionFrame
+    return configWindow, configOptionFrame, hasColorWidget, needColorWidget
+end
+
+function Indy:RefreshColorValues()
+    local R, G, B = unpack(Indy.hasColor)
+    self.hasColorWidget.r:SetText(tostring(R))
+    self.hasColorWidget.g:SetText(tostring(G))
+    self.hasColorWidget.b:SetText(tostring(B))
+    self.hasColorWidget.sample:SetFontColor(R or 0, G or 0, B or 0,1)
+
+    R, G, B = unpack(Indy.needColor)
+    self.needColorWidget.r:SetText(tostring(R))
+    self.needColorWidget.g:SetText(tostring(G))
+    self.needColorWidget.b:SetText(tostring(B))
+    self.needColorWidget.sample:SetFontColor(R or 0, G or 0, B or 0,1)
 end
 
 function Indy:ShowConfigWindow()
     if not self.configWindow then
-        self.configWindow, self.configOptionFrame = BuildConfigWindow()
+        self.configWindow, self.configOptionFrame, self.hasColorWidget, self.needColorWidget = BuildConfigWindow()
     end
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, self.configOptionFrame)
+    self:RefreshColorValues()
     self.configWindow:SetVisible(true)
 end
 
