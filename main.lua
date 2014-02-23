@@ -40,6 +40,17 @@ local function AllArtifactIds()
     return allIds
 end
 
+function Indy:UpdateArtifactIds()
+    local allIds =  AllArtifactIds()
+    local artifactTable = Indy.artifactTable
+
+    for artifactId, _ in pairs(allIds) do
+        if artifactTable[artifactId] == nil then
+            artifactTable[artifactId] = {}
+        end
+    end
+end
+
 local profile = {
     trackCollectionsForChars = {},
     artifactTableVersion = 0,
@@ -90,6 +101,9 @@ local function Initialize(addonName)
 
     -- Perform table conversions
     Indy.artifactTable = Indy:ConvertArtifactTableFrom0To1()
+
+    -- Update profile artifact list with any new artifacts in INDY_ArtifactCollections
+    Indy:UpdateArtifactIds()
 
     -- Initialize frames
     Indy:UpdateTooltipBorder()
