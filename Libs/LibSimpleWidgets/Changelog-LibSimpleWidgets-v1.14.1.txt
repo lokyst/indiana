@@ -1,0 +1,20 @@
+tag v1.14.1
+a994095840b954ade92fb3dccc1766ddd2f84b05
+Gordon Tyler <gordon@doxxx.net>
+2013-04-28 13:38:01 -0400
+
+
+
+--------------------
+
+Gordon Tyler:
+	- Add RemoveAllRows function to grid.
+	- Clean up existing row frames and cells when replacing or removing rows.
+	- Hide existing cells in Grid's SetRows.
+	- Use self:Layout() instead of Layout(self).
+	- Bump version to v1.14.1.
+	- When positioning scrollview content set its width instead of setting its TOPRIGHT point.
+	- Raise Select's dropdown layer.
+	- Grid layout should do nothing if there are no rows.
+	- Clarify Grid's SetRows documentation.
+	- Add simple example for Grid to documentation.
