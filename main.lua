@@ -152,9 +152,10 @@ local function OnBagEvent(tableOfSlots)
         return
     end
 
-    CheckForUnknownItems(tableOfSlots)
-
+    --CheckForUnknownItems(tableOfSlots)
     local tableOfItemDetails = Inspect.Item.Detail(tableOfSlots)
+    CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
+
     local artifactId
     local artifactName = ""
     local charList = {}
