@@ -12,6 +12,7 @@ RunOnStartup = {
     "tools.lua",
     "ArtifactCollections.lua",
     "UnstableArtifactCollections.lua",
+    "ChangedIds.lua",
     "main.lua",
     "config.lua",
     "tooltip.lua",

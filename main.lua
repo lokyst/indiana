@@ -81,6 +81,9 @@ local function Initialize(addonName)
     -- Update profile artifact list with any new artifacts in INDY_ArtifactCollections
     Indy:AddNewArtifacts()
 
+    -- Migrate existing data to new artifact Ids if necessary
+    private.MigrateArtifacts(Indy)
+
     -- Initialize frames
     Indy:UpdateTooltipBorder()
     Indy:ShowBagCheckButton()
