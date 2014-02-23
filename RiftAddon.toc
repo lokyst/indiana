@@ -10,6 +10,7 @@ Environment = "2.5"
 
 RunOnStartup = {
     "ArtifactCollections.lua",
+    "UnstableArtifactCollections.lua",
     "main.lua",
     "config.lua",
     "tooltip.lua",
