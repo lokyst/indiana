@@ -1,32 +1,8 @@
+local addon, private = ...
+local strsplit = private.strsplit
+local strtrim = private.strtrim
+
 Indy = {}
-
--- Some useful generic functions
-local function strsplit(delimiter, text)
-    local list = {}
-    local pos = 1
-    if string.find("", delimiter, 1) then -- this would result in endless loops
-        error("delimiter matches empty string!")
-    end
-    while 1 do
-        local first, last = string.find(text, delimiter, pos)
-        if first then -- found?
-            table.insert(list, string.sub(text, pos, first-1))
-            pos = last+1
-        else
-            table.insert(list, string.sub(text, pos))
-            break
-        end
-    end
-    return list
-end
-
-local function strtrim(s)
-    if not s then
-        return nil
-    end
-
-    return s:match'^%s*(.*%S)' or ''
-end
 
 -- Define default values. Default value must never be nil
 
@@ -38,6 +14,17 @@ local function AllArtifactIds()
         end
     end
     return allIds
+end
+
+function Indy:AddNewArtifacts()
+    local allIds =  AllArtifactIds()
+    local artifactTable = Indy.artifactTable
+
+    for artifactId, _ in pairs(allIds) do
+        if artifactTable[artifactId] == nil then
+            artifactTable[artifactId] = {}
+        end
+    end
 end
 
 local profile = {
@@ -90,6 +77,12 @@ local function Initialize(addonName)
 
     -- Perform table conversions
     Indy.artifactTable = Indy:ConvertArtifactTableFrom0To1()
+
+    -- Update profile artifact list with any new artifacts in INDY_ArtifactCollections
+    Indy:AddNewArtifacts()
+
+    -- Migrate existing data to new artifact Ids if necessary
+    private.MigrateArtifacts(Indy)
 
     -- Initialize frames
     Indy:UpdateTooltipBorder()
@@ -159,9 +152,10 @@ local function OnBagEvent(tableOfSlots)
         return
     end
 
-    CheckForUnknownItems(tableOfSlots)
-
+    --CheckForUnknownItems(tableOfSlots)
     local tableOfItemDetails = Inspect.Item.Detail(tableOfSlots)
+    CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
+
     local artifactId
     local artifactName = ""
     local charList = {}

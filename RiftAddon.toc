@@ -4,12 +4,15 @@ NameShort = "INDY"
 Description = "An addon to catalogue your artifacts"
 Author = "Lokyst, dOxxx"
 Website = "http://www.riftui.com/downloads/info315-IndianasArtifactCatalogueofDoom.html"
-Version = "1.1.5"
+Version = "1.1.6"
 Email = "rhoda.baker@gmail.com"
 Environment = "2.5"
 
 RunOnStartup = {
+    "tools.lua",
     "ArtifactCollections.lua",
+    "UnstableArtifactCollections.lua",
+    "ChangedIds.lua",
     "main.lua",
     "config.lua",
     "tooltip.lua",
