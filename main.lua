@@ -40,7 +40,7 @@ local function AllArtifactIds()
     return allIds
 end
 
-function Indy:UpdateArtifactIds()
+function Indy:AddNewArtifacts()
     local allIds =  AllArtifactIds()
     local artifactTable = Indy.artifactTable
 
@@ -103,7 +103,7 @@ local function Initialize(addonName)
     Indy.artifactTable = Indy:ConvertArtifactTableFrom0To1()
 
     -- Update profile artifact list with any new artifacts in INDY_ArtifactCollections
-    Indy:UpdateArtifactIds()
+    Indy:AddNewArtifacts()
 
     -- Initialize frames
     Indy:UpdateTooltipBorder()
