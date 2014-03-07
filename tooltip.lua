@@ -107,22 +107,23 @@ local function IndyTooltip(rType, rShown, rBuff)
 
     -- Short circuit check to see if it is an artifact
     local isArtifact = false
-    if Indy.artifactTable[ttShown] then
+    if Indy.artifactTable[itemDetails.type] then
         isArtifact = true
     else
         -- Go through artifact categorization
-
         if not itemDetails then return end
 
         if not itemDetails.category then return end
 
-        if not (itemDetails.category:find("misc") and itemDetails.category:find("collectible")) then
+        if not ((itemDetails.category:find("misc") and itemDetails.category:find("collectible"))
+          or itemDetails.category:find("artifact")) then
             return
         end
 
         --if itemDetails.stackMax == nil or itemDetails.stackMax ~= 99 then
         --    return
         --end
+
         isArtifact = true
     end
 
