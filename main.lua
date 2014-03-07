@@ -99,8 +99,9 @@ local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
     for _, itemDetails in pairs(tableOfItemDetails) do
         -- Check if it is a collectible item
         if itemDetails and itemDetails.category and
-                itemDetails.category:find("misc") and
-                itemDetails.category:find("collectible") and
+                ((itemDetails.category:find("misc") and
+                itemDetails.category:find("collectible")) or
+                itemDetails.category:find("artifact")) and
                 itemDetails.stackMax and
                 itemDetails.stackMax == 99 then
             artifactId = itemDetails.type
@@ -126,7 +127,12 @@ local function OnTooltipChange(ttType, ttShown, ttBuff)
     local artifactId
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        CheckForUnknownItems({ttShown})
+        itemDetails = Inspect.Item.Detail(ttShown)
+        if itemDetails then
+            artifactId = itemDetails.type
+        end
+
+        CheckForUnknownItems({artifactId})
     end
 end
 
@@ -429,7 +435,7 @@ function Indy:CheckBagsForArtifacts()
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 
     for itemId, itemDetails in pairs(tableOfItemDetails) do
-        if itemDetails.category and itemDetails.category:find("collectible") then
+        if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
             local artifactId = itemDetails.type
             local artifactName = itemDetails.name
 
