@@ -105,14 +105,14 @@ local function IndyTooltip(rType, rShown, rBuff)
 
     local itemDetails = Inspect.Item.Detail(ttShown)
 
+    if not itemDetails then return end
+
     -- Short circuit check to see if it is an artifact
     local isArtifact = false
     if Indy.artifactTable[itemDetails.type] then
         isArtifact = true
     else
         -- Go through artifact categorization
-        if not itemDetails then return end
-
         if not itemDetails.category then return end
 
         if not ((itemDetails.category:find("misc") and itemDetails.category:find("collectible"))
