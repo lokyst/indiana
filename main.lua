@@ -167,7 +167,7 @@ local function OnBagEvent(tableOfSlots)
     local charList = {}
 
     for slot, itemDetails in pairs(tableOfItemDetails) do
-        if itemDetails.category and itemDetails.category:find("collectible") then
+        if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
@@ -483,7 +483,7 @@ function Indy:ProcessAHData(tableOfAuctions)
 
         CheckForUnknownItems({itemId})
 
-        if itemDetails.category and itemDetails.category:find("collectible") then
+        if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
