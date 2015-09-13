@@ -1,0 +1,13 @@
+tag v1.14.3
+a9bc147ddf45b20e2683ba591654334b2dcc136b
+Gordon Tyler <gordon@doxxx.net>
+2015-05-23 09:09:50 -0400
+
+
+
+--------------------
+
+Gordon Tyler:
+	- Bump version to 1.14.3.
+	- Fix recycling of ScrollList item frame's background frames.
+	- IDEA 14.1 project file updates.
