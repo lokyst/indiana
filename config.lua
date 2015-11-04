@@ -6,7 +6,7 @@ local function CreateConfigWindow()
     local buttonWidth = 135
     -- Make the dialog window 3 buttons and some padding wide
     baseConfigWindow:SetWidth(buttonWidth*3 + 40)
-    baseConfigWindow:SetHeight(600)
+    baseConfigWindow:SetHeight(700)
 
     -- Add a close button to the top right corner
     baseConfigWindow:SetCloseButtonVisible(true)
@@ -372,6 +372,15 @@ local CONFIG_TABLE = {
         get = function() return Indy.charPerLine end,
         set = function(value) return Indy:ToggleCharPerLine() end,
     },
+    moveIcon = {
+        order = 50,
+        type = "checkbox",
+        label = "Move bag scan icon",
+        labelPos = "right",
+        width = "full",
+        get = function() return Indy.moveBagCheckButton end,
+        set = function(value) return Indy:ToggleMoveBagCheckButton() end,
+    },
 }
 
 local function BuildConfigWindow()
@@ -462,6 +471,12 @@ function Indy:ToggleShowBagCheckButton()
     self:UpdateConfigWindow()
 
     self:ShowBagCheckButton()
+end
+
+function Indy:ToggleMoveBagCheckButton()
+    self.moveBagCheckButton = not self.moveBagCheckButton
+    print("Move Bag Check Button: " .. tostring(self.moveBagCheckButton))
+    self:UpdateConfigWindow()
 end
 
 function Indy:ToggleCharPerLine()
