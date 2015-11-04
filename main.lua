@@ -36,10 +36,13 @@ local profile = {
     showTooltips = true,
     showVerboseTooltips = true,
     showBagCheckButton = true,
+    moveBagCheckButton = false,
     showTooltipBorder = true,
     hasColor = {0,1,0,1},
     needColor = {1,0,0,1},
     charPerLine = false,
+    posX = false,
+    posY = false,
 }
 
 local function Initialize(addonName)
