@@ -4,7 +4,7 @@ NameShort = "INDY"
 Description = "An addon to catalogue your artifacts"
 Author = "Lokyst, dOxxx"
 Website = "http://www.riftui.com/downloads/info315-IndianasArtifactCatalogueofDoom.html"
-Version = "1.1.10"
+Version = "1.1.11"
 Email = "rhoda.baker@gmail.com"
 Environment = "3.4"
 
