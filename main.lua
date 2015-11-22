@@ -22,10 +22,8 @@ function Indy:InspectItemDetail(itemId)
     local itemDetails
     if ITEM_CACHE[itemId] then
         itemDetails = ITEM_CACHE[itemId]
-        print("Retrieved item: " .. itemId .. " from cache")
     else
         itemDetails = Inspect.Item.Detail(itemId)
-        print("Retrieved item: " .. itemId .. " from server")
         ITEM_CACHE[itemId] = itemDetails
     end
     return itemDetails
