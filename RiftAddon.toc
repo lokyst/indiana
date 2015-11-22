@@ -11,7 +11,7 @@ Environment = "3.4"
 RunOnStartup = {
     "tools.lua",
     "ArtifactCollections.lua",
-    "UnstableArtifactCollections.lua",
+    "MissingArtifactCollections.lua",
     "ChangedIds.lua",
     "main.lua",
     "config.lua",

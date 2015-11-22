@@ -1,5 +1,9 @@
+-- All missing artifact collections that are not part of the Rift Discovery file
+
 -- Contributed by Adelea
-local UNSTABLE_ARTIFACTS = {
+local MISSING_ARTIFACTS = {
+--------------------------------------------------------------------------------
+-- UNSTABLE ARTIFACTS
 	-- Silverwood
 	["Unstable: Unstable Silverwood"] = {
 		["I04F1718BB38DA493,581F0F22471D020A,,,,,,"] = true,
@@ -2044,8 +2048,40 @@ local UNSTABLE_ARTIFACTS = {
 		["I72003A3A59FBEC2C,315E242E82385F7E,,,,,,"] = true,
 		["I54F770BBF712D43A,904ACCFBFCEA199C,,,,,,"] = true,
 	},
+
+--------------------------------------------------------------------------------
+-- NIGHTMARE SETS
+
+	["Nightmare: Nightmare Planetouched Wilds"] = {
+		["I3F15D4CE9DBEF314,0E8DE6DE05B95802,,,,,,"] = true, -- Seacap
+		["I6BDE18FE56C7EC7A,3D9D92C31A7D8473,,,,,,"] = true, -- The Clockwork God
+		["I518BA67E6A1F52F6,166000D64692555E,,,,,,"] = true, -- The Ticking Red Sun
+		["I4B7D55677118C012,E7CC8D7347230E57,,,,,,"] = true, -- Witchdoctor
+		["I7141284E2D22CDDF,E5CAFBAEEA6FE822,,,,,,"] = true, -- Rod of Conception
+		["I427876CF9422370A,312FF9E1801D828F,,,,,,"] = true, -- Actual Bears
+		["I27E1994A80C7BFDC,E6E07E332DCC143E,,,,,,"] = true, -- Giant Trapdoor Huntsman
+		["I3C49BDC80A112350,F95A95ACBE6E2DF6,,,,,,"] = true, -- Khort Glass Spider
+		["I5E46E5FB8463F1A0,DD492D18521315A0,,,,,,"] = true, -- Tick Infested Giant Tick
+		["I08115B0F6AFB88B2,029FA044221A950E,,,,,,"] = true, -- Swimming to Callweddi
+		["I16B5EC178BB08EEF,4BC9E17728F2EB29,,,,,,"] = true, -- Drooling in the Spirit Lodge
+		["I388E55A2884493B0,4511AAB4928FB191,,,,,,"] = true, -- Mercing
+		["I6F3124694D956987,3ADE92501F35C1C3,,,,,,"] = true, -- Sarnai
+		["I0CFE123C7B601C6F,349A816A2C7DA4ED,,,,,,"] = true, -- The Vampire Bite
+		["I007D7F7B244DC60A,77E79D65FF734DB7,,,,,,"] = true, -- Khortarized
+		["IFC77C95E6ED043CA,6F55E58A7530B5FA,,,,,,"] = true, -- Khort Chili
+		["I5A7DE1B7B6313410,1032057355D94C78,,,,,,"] = true, -- A Wicked Looking Scar
+		["I295601346A962BB2,07A215882DDB685B,,,,,,"] = true, -- Planar Loadstone
+		["I5FE86E103CA9EB46,13176024CA7A0ACC,,,,,,"] = true, -- Exquisite Amethyst
+		["I7E1ECC7EC16E71E9,5C3044ABAAEA0321,,,,,,"] = true, -- Reverse Inflation
+		["I79F2E770E249F959,897DD4EBC3257F7A,,,,,,"] = true, -- Badly Tied Knots
+		["I4A4B64628714C3EC,2776F68256B606E6,,,,,,"] = true, -- Snakes!
+		["I2027358598A90F90,FBD9165A78CBBC6E,,,,,,"] = true, -- Field of Ungrounded Rods
+		["I79011DDA270BF01A,44CD8E7763793045,,,,,,"] = true, -- Tongue-eating Creeper
+		["I3E4F2D485D66D329,4E0D1BF26B4A54FE,,,,,,"] = true, -- Elfilpachstodin
+		["I065C3BD46847791C,60B4BDA8180A0C61,,,,,,"] = true, -- Eyeball Necklace
+	},
 }
 
-for k, v in pairs(UNSTABLE_ARTIFACTS) do
+for k, v in pairs(MISSING_ARTIFACTS) do
     INDY_ArtifactCollections[k] = v
 end
