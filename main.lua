@@ -159,7 +159,7 @@ local function InspectTooltip()
     local ttType, ttShown = Inspect.Tooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = self:InspectItemDetail(ttShown)
+        itemDetails = Indy:InspectItemDetail(ttShown)
         if itemDetails then
             artifactId = itemDetails.type
         end
@@ -228,7 +228,7 @@ local function SlashHandler(arg)
 
         Indy:AddItemToChar(artifactId)
 
-        local itemDetails = self:InspectItemDetail(artifactId)
+        local itemDetails = Indy:InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has collected [" .. artifactName .. "]")
@@ -241,7 +241,7 @@ local function SlashHandler(arg)
 
         Indy:DeleteItemFromChar(artifactId)
 
-        local itemDetails = self:InspectItemDetail(artifactId)
+        local itemDetails = Indy:InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has deleted [" .. artifactName .. "]")
