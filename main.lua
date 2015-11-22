@@ -16,6 +16,26 @@ local function AllArtifactIds()
     return allIds
 end
 
+local SETS_BY_ID = {}
+local function ConstructSetsByIdTable()
+    for setName, ids in pairs(INDY_ArtifactCollections) do
+        for id, _ in pairs(ids) do
+            if SETS_BY_ID[id] then  -- already exists
+                if not SETS_BY_ID[id].sets[setName] then
+                    SETS_BY_ID[id].sets[setName] = true
+                    SETS_BY_ID[id].setCount = SETS_BY_ID[id].setCount + 1
+                end
+
+            else
+                SETS_BY_ID[id] = {}
+                SETS_BY_ID[id].sets = {}
+                SETS_BY_ID[id].sets[setName] = true
+                SETS_BY_ID[id].setCount = 1
+            end
+        end
+    end
+end
+
 local ITEM_CACHE = {}
 function Indy:InspectItemDetail(itemId)
     -- Cache item data for repeat queries
@@ -93,6 +113,9 @@ local function Initialize(addonName)
 
     -- Perform table conversions
     Indy.artifactTable = Indy:ConvertArtifactTableFrom0To1()
+
+    -- Construct lookup table of item sets by itemId
+    ConstructSetsByIdTable()
 
     -- Update profile artifact list with any new artifacts in INDY_ArtifactCollections
     Indy:AddNewArtifacts()
@@ -556,6 +579,11 @@ function Indy:SetTrackStatus(charName, bool)
         return
     end
     self.trackCollectionsForChars[charName] = bool
+end
+
+function Indy:FindArtifactSetsContainingId(id)
+    local idLookup = SETS_BY_ID[id]
+    return idLookup.sets, idLookup.setCount
 end
 
 function Indy:PrintHelp()

@@ -1,15 +1,3 @@
-function Indy:FindArtifactSetsContainingId(id)
-    local sets = {}
-    local setCount = 0
-    for setName, ids in pairs(INDY_ArtifactCollections) do
-        if ids[id] then -- *** PERFORMANCE WARNING *** --
-            sets[setName] = true
-            setCount = setCount + 1
-        end
-    end
-    return sets, setCount
-end
-
 function Indy:ConvertArtifactTableFrom0To1()
     local oldTable = Indy.artifactTable
 
