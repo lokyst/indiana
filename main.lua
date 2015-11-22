@@ -16,6 +16,21 @@ local function AllArtifactIds()
     return allIds
 end
 
+local ITEM_CACHE = {}
+function Indy:InspectItemDetail(itemId)
+    -- Cache item data for repeat queries
+    local itemDetails
+    if ITEM_CACHE[itemId] then
+        itemDetails = ITEM_CACHE[itemId]
+        print("Retrieved item: " .. itemId .. " from cache")
+    else
+        itemDetails = Inspect.Item.Detail(itemId)
+        print("Retrieved item: " .. itemId .. " from server")
+        ITEM_CACHE[itemId] = itemDetails
+    end
+    return itemDetails
+end
+
 function Indy:AddNewArtifacts()
     local allIds =  AllArtifactIds()
     local artifactTable = Indy.artifactTable
@@ -130,7 +145,7 @@ local function OnTooltipChange(ttType, ttShown, ttBuff)
     local artifactId
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = Inspect.Item.Detail(ttShown)
+        itemDetails = Indy:InspectItemDetail(ttShown)
         if itemDetails then
             artifactId = itemDetails.type
         end
@@ -146,7 +161,7 @@ local function InspectTooltip()
     local ttType, ttShown = Inspect.Tooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = Inspect.Item.Detail(ttShown)
+        itemDetails = self:InspectItemDetail(ttShown)
         if itemDetails then
             artifactId = itemDetails.type
         end
@@ -195,7 +210,7 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
     -- Check that AH Data is paged before processing
     if tableOfTypes.index and tableOfTypes.index >= 0 then
         local tableOfAuctionsByChar = Indy:ProcessAHData(tableOfAuctions)
-        Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
+        Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar) -- *** PERFORMANCE WARNING *** --
     end
 
 end
@@ -215,7 +230,7 @@ local function SlashHandler(arg)
 
         Indy:AddItemToChar(artifactId)
 
-        local itemDetails = Inspect.Item.Detail(artifactId)
+        local itemDetails = self:InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has collected [" .. artifactName .. "]")
@@ -228,7 +243,7 @@ local function SlashHandler(arg)
 
         Indy:DeleteItemFromChar(artifactId)
 
-        local itemDetails = Inspect.Item.Detail(artifactId)
+        local itemDetails = self:InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has deleted [" .. artifactName .. "]")
@@ -402,7 +417,7 @@ end
 function Indy:WhoNeedsItem(artifactId)
     local charList = {}
     local itemCounts = {}
-    local _, setCount = self:FindArtifactSetsContainingId(artifactId)
+    local _, setCount = self:FindArtifactSetsContainingId(artifactId) -- *** PERFORMANCE WARNING *** --
 
     if self.artifactTable[artifactId] then
         for name, trackStatus in pairs(self.trackCollectionsForChars) do
@@ -431,8 +446,8 @@ end
 
 function Indy:CheckBagsForArtifacts()
     local slots = Utility.Item.Slot.All()
-    local itemIds = Inspect.Item.List(slots)
-    local tableOfItemDetails = Inspect.Item.Detail(itemIds)
+    local tableOfItemIds = Inspect.Item.List(slots)
+    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
 
     --CheckForUnknownItems(itemIds)
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
@@ -482,7 +497,7 @@ function Indy:ProcessAHData(tableOfAuctions)
     for _, auctionDetails in pairs(tableOfAuctionDetails) do
         local auctionId = auctionDetails.id
         itemId = auctionDetails.item
-        itemDetails = Inspect.Item.Detail(itemId)
+        itemDetails = self:InspectItemDetail(itemId)
 
         CheckForUnknownItems({itemId})
 
@@ -510,16 +525,16 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local auctionBid
     local auctionBuyout
 
-    for auctionId, _ in pairs(tableOfAuctionsByChar) do
+    for auctionId, _ in pairs(tableOfAuctionsByChar) do -- *** PERFORMANCE WARNING *** --
         auctionDetails = Inspect.Auction.Detail(auctionId)
         auctionBid = auctionDetails.bid
         auctionBuyout = auctionDetails.buyout
         itemId = auctionDetails.item
-        itemDetails = Inspect.Item.Detail(itemId)
+        itemDetails = self:InspectItemDetail(itemId) -- *** PERFORMANCE WARNING *** --
         artifactName = itemDetails.name
 
         local needList = {}
-        local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type)
+        local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type) -- *** PERFORMANCE WARNING *** --
         if #charList > 0 then
             if setCount == 0 then
                 setCount = "??"
