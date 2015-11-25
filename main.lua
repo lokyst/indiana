@@ -583,7 +583,11 @@ end
 
 function Indy:FindArtifactSetsContainingId(id)
     local idLookup = SETS_BY_ID[id]
-    return idLookup.sets, idLookup.setCount
+    if idLookup then
+        return idLookup.sets, idLookup.setCount
+    end
+
+    return nil, nil
 end
 
 function Indy:PrintHelp()
