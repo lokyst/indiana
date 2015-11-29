@@ -66,7 +66,7 @@ local function CreateTrackListFrame(parent)
     -- Create a frame to hold the list management section
     local configListFrame = UI.CreateFrame("Frame", "Indy_ConfigListFrame1", parent)
     configListFrame:SetPoint("TOPLEFT", parent, "CENTERLEFT", 30, -30)
-    configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-30, -30)
+    configListFrame:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT",-30, -60)
 
     local configListTexture1 = UI.CreateFrame("Texture", "Indy_ConfigListTexture1", configListFrame)
     configListTexture1:SetPoint("TOPLEFT", configListFrame, "TOPLEFT", -5, -5)
@@ -184,6 +184,34 @@ local function CreateTrackListFrame(parent)
     local trackList, doNotTrackList = RefreshTrackLists()
     configDoNotTrackListFrame:SetItems(doNotTrackList)
     configTrackListFrame:SetItems(trackList)
+
+
+    -- Create reassign button underneath the List Frame
+    local reassignButton = UI.CreateFrame("RiftButton", "Indy_ReassignButton", configListFrame)
+    reassignButton:SetPoint("TOPLEFT", configListFrame, "BOTTOMLEFT", 0, 5)
+    reassignButton:SetText("Reassign")
+
+    -- Call reassign window based on name selected from tracking lists
+    function reassignButton.Event:LeftPress()
+        local itemSelected
+
+        itemSelected = configDoNotTrackListFrame:GetSelectedItem()
+        if not itemSelected then
+            itemSelected = configTrackListFrame:GetSelectedItem()
+        end
+
+        if not itemSelected then
+            return
+        end
+
+        print(itemSelected)
+        Indy:ShowReassignWindow()
+
+        Indy:SetTrackStatus(itemSelected, true)
+        --local trackList, doNotTrackList = RefreshTrackLists()
+        --configDoNotTrackListFrame:SetItems(doNotTrackList)
+        --configTrackListFrame:SetItems(trackList)
+    end
 
     return configListFrame
 
