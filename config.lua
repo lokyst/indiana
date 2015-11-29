@@ -2,6 +2,7 @@ local context = UI.CreateContext("Indy_ConfigContext")
 
 local function CreateConfigWindow()
     local baseConfigWindow = UI.CreateFrame("SimpleWindow", "Indy_ConfigWindow", context)
+    baseConfigWindow:SetPoint("CENTER", UIParent, "CENTER")
 
     local buttonWidth = 135
     -- Make the dialog window 3 buttons and some padding wide
@@ -185,7 +186,6 @@ local function CreateTrackListFrame(parent)
     configDoNotTrackListFrame:SetItems(doNotTrackList)
     configTrackListFrame:SetItems(trackList)
 
-
     -- Create reassign button underneath the List Frame
     local reassignButton = UI.CreateFrame("RiftButton", "Indy_ReassignButton", configListFrame)
     reassignButton:SetPoint("TOPLEFT", configListFrame, "BOTTOMLEFT", 0, 5)
@@ -199,18 +199,12 @@ local function CreateTrackListFrame(parent)
         if not itemSelected then
             itemSelected = configTrackListFrame:GetSelectedItem()
         end
-
         if not itemSelected then
             return
         end
 
         print(itemSelected)
-        Indy:ShowReassignWindow()
-
-        Indy:SetTrackStatus(itemSelected, true)
-        --local trackList, doNotTrackList = RefreshTrackLists()
-        --configDoNotTrackListFrame:SetItems(doNotTrackList)
-        --configTrackListFrame:SetItems(trackList)
+        Indy:ShowReassignWindow(itemSelected)
     end
 
     return configListFrame
@@ -511,4 +505,70 @@ function Indy:ToggleCharPerLine()
     self.charPerLine = not self.charPerLine
     print("Show single character per line: " .. tostring(self.charPerLine))
     self:UpdateConfigWindow()
+end
+
+--------------------------------------------------------------------------------
+
+local function CreateReassignWindow()
+    local reassignWindow = UI.CreateFrame("SimpleWindow", "Indy_ReassignWindow", context)
+
+    reassignWindow:SetPoint("CENTER", UIParent, "CENTER")
+    reassignWindow:SetTitle("Reassign Character")
+    reassignWindow:SetHeight(250)
+    --reassignWindow:SetLayer(context:GetLayer()+1000)
+    reassignWindow:SetVisible(false)
+
+    return reassignWindow
+end
+
+local function CreateReassignMessageFrame(parent)
+    local reassignMessageFrame = parent:GetContent()
+
+    -- Create a frame for the message with a nice background
+    local reassignTexture = UI.CreateFrame("Texture", "Indy_ConfigListTexture2", reassignMessageFrame)
+    reassignTexture:SetPoint("TOPLEFT", reassignMessageFrame, "TOPLEFT", 10, -5)
+    reassignTexture:SetPoint("BOTTOMRIGHT", reassignMessageFrame, "BOTTOMRIGHT", -10, -50)
+    reassignTexture:SetTexture("Rift", "inner_black_subwin_04.png.dds")
+    reassignTexture:SetLayer(1)
+
+    local reassignMessageText = UI.CreateFrame("Text", "Indy_ReassignMessageText", reassignMessageFrame)
+    reassignMessageText:SetPoint("TOPLEFT", reassignTexture, "TOPLEFT", 10, 10)
+    reassignMessageText:SetPoint("BOTTOMRIGHT", reassignTexture, "BOTTOMRIGHT", -10, -10)
+    reassignMessageText:SetLayer(2)
+
+    -- Create Ok and Cancel buttons
+    local cancelButton = UI.CreateFrame("RiftButton", "Indy_ReassignCancel", reassignMessageFrame)
+    cancelButton:SetPoint("BOTTOMRIGHT", reassignMessageFrame, "BOTTOMRIGHT", -15, -10)
+    cancelButton:SetText("Cancel")
+
+    function cancelButton.Event:LeftPress()
+        parent:SetVisible(false)
+    end
+
+    local okButton = UI.CreateFrame("RiftButton", "Indy_ReassignOk", reassignMessageFrame)
+    okButton:SetPoint("BOTTOMRIGHT", cancelButton, "BOTTOMLEFT", 10, 0)
+    okButton:SetText("Ok")
+
+    function okButton.Event:LeftPress()
+        parent:SetVisible(false)
+    end
+
+    return reassignMessageText
+end
+
+local function BuildReassignWindow()
+    local reassignWindow = CreateReassignWindow()
+    local reassignMessageText = CreateReassignMessageFrame(reassignWindow)
+
+    return reassignWindow, reassignMessageText
+end
+
+function Indy:ShowReassignWindow(selectedChar)
+    if not self.reassignWindow then
+        self.reassignWindow, self.reassignMessageText = BuildReassignWindow()
+    end
+    local myString = "You are about to reassign the artifact list from " .. selectedChar .. " to the current character. Do you wish to proceed?"
+    self.reassignMessageText:SetText(myString)
+    self.reassignMessageText:SetWordwrap(true)
+    self.reassignWindow:SetVisible(true)
 end
