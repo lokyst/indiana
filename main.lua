@@ -49,6 +49,16 @@ function Indy:InspectItemDetail(itemId)
     return itemDetails
 end
 
+function Indy:InspectItemsDetails(tableOfItemIds)
+    local tableOfItemDetails = {}
+
+    for _, id in ipairs(tableOfItemIds) do
+        tableOfItemDetails[id] = self:InspectItemDetail(id)
+    end
+
+    return tableOfItemDetails
+end
+
 function Indy:AddNewArtifacts()
     local allIds =  AllArtifactIds()
     local artifactTable = Indy.artifactTable
@@ -156,7 +166,7 @@ local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 end
 
 local function CheckForUnknownItems(tableOfItemIds)
-    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
+    local tableOfItemDetails = Indy:InspectItemsDetails(tableOfItemIds)
 
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 end
@@ -467,8 +477,17 @@ end
 
 function Indy:CheckBagsForArtifacts()
     local slots = Utility.Item.Slot.All()
-    local tableOfItemIds = Inspect.Item.List(slots)
-    local tableOfItemDetails = Inspect.Item.Detail(tableOfItemIds)
+    local tableOfSlotsAndItemIds = Inspect.Item.List(slots)
+
+    -- Inspect.Item.List(slots) returns a mapped table of slotId to itemId
+    local tableOfItemIds = {}
+    for slotID, itemId in pairs(tableOfSlotsAndItemIds) do
+        if itemId then
+            table.insert(tableOfItemIds, itemId)
+        end
+    end
+
+    local tableOfItemDetails = self:InspectItemsDetails(tableOfItemIds)
 
     --CheckForUnknownItems(itemIds)
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
