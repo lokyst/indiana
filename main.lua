@@ -587,7 +587,7 @@ function Indy:FindArtifactSetsContainingId(id)
         return idLookup.sets, idLookup.setCount
     end
 
-    return nil, nil
+    return {}, 0
 end
 
 function Indy:PrintHelp()
