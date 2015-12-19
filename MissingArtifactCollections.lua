@@ -2083,5 +2083,12 @@ local MISSING_ARTIFACTS = {
 }
 
 for k, v in pairs(MISSING_ARTIFACTS) do
-    INDY_ArtifactCollections[k] = v
+	--[[
+	-- Dupe checking
+	if not INDY_ArtifactCollections[k] then
+		print(k)
+		INDY_ArtifactCollections[k] = v
+	end
+	--]]
+	INDY_ArtifactCollections[k] = v
 end
