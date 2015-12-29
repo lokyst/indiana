@@ -117,13 +117,18 @@ local function CreateTrackListFrame(parent)
     configTrackLabel:SetFontSize(16)
     configTrackLabel:SetFontColor(0.86,0.81,0.63)
 
+    -- Declaring reassignButton here so that we can refer to it sooner than the button is actually created
+    local reassignButton
+
     -- Set functions for selecting a name from either list
     function configDoNotTrackListFrame.Event:ItemSelect(item)
         configTrackListFrame:ClearSelection()
+        reassignButton:SetEnabled(item ~= Indy.charName)
     end
 
     function configTrackListFrame.Event:ItemSelect(item)
         configDoNotTrackListFrame:ClearSelection()
+        reassignButton:SetEnabled(item ~= Indy.charName)
     end
 
     local trackButton = UI.CreateFrame("Texture", "Indy_TrackButton", configListFrame)
@@ -146,12 +151,17 @@ local function CreateTrackListFrame(parent)
         self:SetTexture("Indy", "textures/RightArrow_Over.png")
     end
 
-    trackButton.Event.LeftClick = function()
-        local itemSelected = configDoNotTrackListFrame:GetSelectedItem()
-        Indy:SetTrackStatus(itemSelected, true)
+    -- Attach refresh function to the frame so we can call whenever
+    function configListFrame:RefreshTrackLists()
         local trackList, doNotTrackList = RefreshTrackLists()
         configDoNotTrackListFrame:SetItems(doNotTrackList)
         configTrackListFrame:SetItems(trackList)
+    end
+
+    trackButton.Event.LeftClick = function()
+        local itemSelected = configDoNotTrackListFrame:GetSelectedItem()
+        Indy:SetTrackStatus(itemSelected, true)
+        configListFrame:RefreshTrackLists()
     end
 
     local doNotTrackButton = UI.CreateFrame("Texture", "Indy_DoNotTrackButton", configListFrame)
@@ -177,17 +187,13 @@ local function CreateTrackListFrame(parent)
     doNotTrackButton.Event.LeftClick = function()
         local itemSelected = configTrackListFrame:GetSelectedItem()
         Indy:SetTrackStatus(itemSelected, false)
-        local trackList, doNotTrackList = RefreshTrackLists()
-        configDoNotTrackListFrame:SetItems(doNotTrackList)
-        configTrackListFrame:SetItems(trackList)
+        configListFrame:RefreshTrackLists()
     end
 
-    local trackList, doNotTrackList = RefreshTrackLists()
-    configDoNotTrackListFrame:SetItems(doNotTrackList)
-    configTrackListFrame:SetItems(trackList)
+    configListFrame:RefreshTrackLists()
 
     -- Create reassign button underneath the List Frame
-    local reassignButton = UI.CreateFrame("RiftButton", "Indy_ReassignButton", configListFrame)
+    reassignButton = UI.CreateFrame("RiftButton", "Indy_ReassignButton", configListFrame)
     reassignButton:SetPoint("TOPLEFT", configListFrame, "BOTTOMLEFT", 0, 5)
     reassignButton:SetText("Reassign")
 
@@ -203,7 +209,6 @@ local function CreateTrackListFrame(parent)
             return
         end
 
-        print(itemSelected)
         Indy:ShowReassignWindow(itemSelected)
     end
 
@@ -419,7 +424,7 @@ local function BuildConfigWindow()
 
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, configOptionFrame)
 
-    return configWindow, configOptionFrame, hasColorWidget, needColorWidget
+    return configWindow, configOptionFrame, hasColorWidget, needColorWidget, configListFrame
 end
 
 function Indy:RefreshColorValues()
@@ -438,7 +443,7 @@ end
 
 function Indy:ShowConfigWindow()
     if not self.configWindow then
-        self.configWindow, self.configOptionFrame, self.hasColorWidget, self.needColorWidget = BuildConfigWindow()
+        self.configWindow, self.configOptionFrame, self.hasColorWidget, self.needColorWidget, self.configListFrame = BuildConfigWindow()
     end
     Library.LibSimpleWidgets.Layout(CONFIG_TABLE, self.configOptionFrame)
     self:RefreshColorValues()
@@ -515,7 +520,7 @@ local function CreateReassignWindow()
     reassignWindow:SetPoint("CENTER", UIParent, "CENTER")
     reassignWindow:SetTitle("Reassign Character")
     reassignWindow:SetHeight(250)
-    --reassignWindow:SetLayer(context:GetLayer()+1000)
+    reassignWindow:SetLayer(1000)
     reassignWindow:SetVisible(false)
 
     return reassignWindow
@@ -550,6 +555,7 @@ local function CreateReassignMessageFrame(parent)
     okButton:SetText("Ok")
 
     function okButton.Event:LeftPress()
+        Indy:ReassignArtifacts(parent.selectedChar, Indy.charName)
         parent:SetVisible(false)
     end
 
@@ -567,8 +573,34 @@ function Indy:ShowReassignWindow(selectedChar)
     if not self.reassignWindow then
         self.reassignWindow, self.reassignMessageText = BuildReassignWindow()
     end
-    local myString = "You are about to reassign the artifact list from " .. selectedChar .. " to the current character (" .. Indy.charName .. "). This will overwrite " .. Indy.charName .. "'s data. Do you wish to proceed?"
+    local myString = "You are about to reassign the artifact list from " .. selectedChar .. " to the current character (" .. Indy.charName .. "). This will OVERWRITE " .. Indy.charName .. "'s data and DELETE " .. selectedChar .. "'s data. Do you wish to proceed?"
     self.reassignMessageText:SetText(myString)
     self.reassignMessageText:SetWordwrap(true)
     self.reassignWindow:SetVisible(true)
+
+    self.reassignWindow.selectedChar = selectedChar
+end
+
+function Indy:ReassignArtifacts(fromChar, toChar)
+    if fromChar == toChar then
+        return
+    end
+
+    for artifactId, _ in pairs(self.artifactTable) do
+        local fromArtifactStatus = self.artifactTable[artifactId][fromChar]
+        if fromArtifactStatus ~= nil and fromArtifactStatus > 0 then
+            local toArtifactStatus = self.artifactTable[artifactId][toChar]
+            if toArtifactStatus == nil then toArtifactStatus = 0 end
+            self.artifactTable[artifactId][toChar] = math.max(fromArtifactStatus, toArtifactStatus)
+            -- Remove the entry from the artifact ID
+            self.artifactTable[artifactId][fromChar] = nil
+        end
+    end
+
+    -- Remove the char from the lilst of collections to be tracked
+    self.trackCollectionsForChars[fromChar] = nil
+
+    -- Update the tracking lists so that they do not display the old char
+    self.configListFrame:RefreshTrackLists()
+    print("Artifacts reassigned from " .. tostring(fromChar) .. " to " .. tostring(toChar))
 end
