@@ -567,7 +567,7 @@ function Indy:ShowReassignWindow(selectedChar)
     if not self.reassignWindow then
         self.reassignWindow, self.reassignMessageText = BuildReassignWindow()
     end
-    local myString = "You are about to reassign the artifact list from " .. selectedChar .. " to the current character. Do you wish to proceed?"
+    local myString = "You are about to reassign the artifact list from " .. selectedChar .. " to the current character (" .. Indy.charName .. "). This will overwrite " .. Indy.charName .. "'s data. Do you wish to proceed?"
     self.reassignMessageText:SetText(myString)
     self.reassignMessageText:SetWordwrap(true)
     self.reassignWindow:SetVisible(true)

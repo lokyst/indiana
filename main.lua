@@ -113,7 +113,14 @@ local function Initialize(addonName)
 
     -- Get current character's name
     local playerDetails = Inspect.Unit.Detail("player")
-    local charName = playerDetails.name
+    Indy.playerName = playerDetails.name
+
+    -- Get current character's shard
+    local shardDetails = Inspect.Shard()
+    Indy.shardName = shardDetails.name
+
+    -- Combine the player name + shard name to arrive at unique char name
+    local charName = Indy.playerName .. "-" .. Indy.shardName
     Indy.charName = charName
 
     -- Automatically add new characters to the track list
