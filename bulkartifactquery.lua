@@ -106,12 +106,15 @@ local function ArtifactNameQuery()
     local itemCounter = 1
     local cycleCounter = 1
     local failedItems = 0
+    local cpuStartTime = Inspect.Time.Real()
 
     for itemId, _ in pairs(Indy.unnamedArtifacts) do
         local success
         local failCounter = 1
+        local loopCpuTime
+        local loopCpuStartTime = Inspect.Time.Real()
         repeat
-            if cycleCounter % 3 == 0 then
+            --if cycleCounter % 1 == 0 then
                 --local startTime = Inspect.Time.Real()
                 success, itemDetail = pcall(Inspect.Item.Detail, itemId)
                 --print("ProcessTime: " .. (Inspect.Time.Real() - startTime))
@@ -132,12 +135,19 @@ local function ArtifactNameQuery()
                     success = true
                 end
 
-                --print("Cycles processed: ".. cycleCounter .. " Items Processed: " .. itemCounter .. " Failed: " .. failedItems)
+                loopCpuTime = Inspect.Time.Real() - loopCpuStartTime
+                --print("Cycles processed: ".. cycleCounter .. " Items Processed: " .. itemCounter .. " Failed: " .. failedItems .. " Loop CPUTime: " .. loopCpuTime)
+            --end
+
+
+            if loopCpuTime > 0.01 then
+                coroutine.yield(false)
+                loopCpuStartTime =  Inspect.Time.Real()
             end
 
-            if cycleCounter % 1 == 0 then
+            --[[if cycleCounter % 1 == 0 then
                 coroutine.yield(false)
-            end
+            end--]]
 
             cycleCounter = cycleCounter + 1
         until success
@@ -146,6 +156,7 @@ local function ArtifactNameQuery()
     Indy.artifactTableCount = itemCounter
     Indy.artifactCycleCount = cycleCounter
     Indy.failedItemQueries = failedItemQueries
+    Indy.cpuTime = Inspect.Time.Real() - cpuStartTime
 
     print("Artifact name query complete")
     return true
