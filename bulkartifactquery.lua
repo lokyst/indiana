@@ -3,13 +3,22 @@
 local function ArtifactQuery()
     --Command.System.Watchdog.Quiet()
     local startTime = Inspect.Time.Real()
+    local counter = 0
+
+    for itemId, _ in pairs(Indy.artifactTable) do
+        counter = counter + 1
+    end
+
+    Indy.artifactTableCount = counter
+
     local itemDetails = Inspect.Item.Detail(Indy.artifactTable)
     Indy.QueryItemDetailTime = Inspect.Time.Real() - startTime
 
     local artifactDetailCache = {}
 
     startTime = Inspect.Time.Real()
-    local counter = 0
+
+    counter = 0
     for itemId, itemDetail in pairs(itemDetails) do
         counter = counter + 1
 
