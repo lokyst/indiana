@@ -525,6 +525,8 @@ function Indy:ProcessAHData(tableOfAuctions)
         return
     end
 
+    local cpuTimeStart = Inspect.Time.Real()
+
     local tableOfAuctionDetails = Inspect.Auction.Detail(tableOfAuctions)
 
     local itemId = ""
@@ -533,6 +535,7 @@ function Indy:ProcessAHData(tableOfAuctions)
     local artifactName = ""
     local charList = {}
     local tableOfAuctionsByChar = {}
+    local auctionCount = 0
 
     for _, auctionDetails in pairs(tableOfAuctionDetails) do
         local auctionId = auctionDetails.id
@@ -551,7 +554,12 @@ function Indy:ProcessAHData(tableOfAuctions)
 
         end
 
+        auctionCount = auctionCount + 1
     end
+
+    local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
+    local cpuTimeAvg = cpuTimeElapsed / auctionCount
+    print("ProcessAHData: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
 
     return tableOfAuctionsByChar
 
@@ -564,6 +572,9 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local artifactName = ""
     local auctionBid
     local auctionBuyout
+
+    local cpuTimeStart = Inspect.Time.Real()
+    local auctionCount = 0
 
     for auctionId, _ in pairs(tableOfAuctionsByChar) do -- *** PERFORMANCE WARNING *** --
         auctionDetails = Inspect.Auction.Detail(auctionId)
@@ -590,7 +601,13 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
 
             print("[" .. artifactName .. "] Bid: " .. tostring(auctionBid) .. " BO: " .. tostring(auctionBuyout) .. " needed by: " .. table.concat(needList, ", "))
         end
+
+        auctionCount = auctionCount + 1
     end
+
+    local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
+    local cpuTimeAvg = cpuTimeElapsed / auctionCount
+    print("PrintAuctionsByChar: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
 end
 
 function Indy:SetTrackStatus(charName, bool)
