@@ -240,7 +240,7 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
 
     -- Check that AH Data is paged before processing
     if tableOfTypes.index and tableOfTypes.index >= 0 then
-        local tableOfAuctionsByChar = Indy:ProcessAHData(tableOfAuctions)
+        local tableOfAuctionsByChar = Indy:ProcessAHData(tableOfAuctions) -- *** PERFORMANCE WARNING *** --
         Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar) -- *** PERFORMANCE WARNING *** --
     end
 
