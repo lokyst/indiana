@@ -4,9 +4,10 @@
 -- Also, cannot use watchdog method if we need to query auction house or other post-start-up events.
 
 -- Using cputime as a limit for co-routine execution because we want to limit time used per frame to avoid stuttering.
-local function ArtifactNameQuery()
+local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
     print("Starting artifact name query")
     local failedItemQueries = {}
+    local tableOfItemDetails = {}
 
     local itemCounter = 0
     local succeededItems = 0
@@ -14,7 +15,7 @@ local function ArtifactNameQuery()
     local cpuStartTime = Inspect.Time.Real()
     local loopCpuStartTime = Inspect.Time.Real()
 
-    for itemId, _ in pairs(Indy.artifactTable) do
+    for itemId, _ in pairs(tableOfItemIDs) do
         local success
         local failCounter = 0
         local loopCpuTime
@@ -25,15 +26,15 @@ local function ArtifactNameQuery()
             if success then
                 --Indy.newList[itemId].name =  itemDetail.name
                 --Indy.unnamedArtifacts[itemId] = nil
-
+                tableOfItemDetails[itemId] = itemDetail
                 succeededItems = succeededItems + 1
             else
-
                 failCounter = failCounter + 1
             end
 
             -- if a particular item fails to query more than 50 times quit trying.
             if failCounter > 50 then
+                tableOfItemDetails[itemId] = itemDetail
                 failedItemQueries[itemId] = true
                 failedItems = failedItems + 1
                 success = true
@@ -63,27 +64,41 @@ local function ArtifactNameQuery()
 
     print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems)    
     print("[BulkArtifactQuery] Query complete after " .. Indy.cpuTime .. " seconds")
+    
+    completionFunc(tableOfItemDetails)
+    
     return true
 end
 
-myThreadId = coroutine.create(function ()
-    return ArtifactNameQuery()
-end)
+local CoroutinesQueue = {}
 
-local function ReleaseTheKraken()
-    if myThreadId == nil then
+function Indy:QueryItemDetails(tableOfItemIDs, completionFunc)
+    local myThreadId = coroutine.create(function ()
+        return BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
+    end)
+    
+    table.insert(CoroutinesQueue, myThreadId)
+end
+
+-- Release The Kraken!
+local function BulkArtifactQuery()
+    if #CoroutinesQueue == 0 then
         return
     end
-
-    --print("Resuming artifact query")
-    local success, result = coroutine.resume(myThreadId)
-    if not success then
-        print("Artifact query failed: "..result)
-        myThreadId = nil
-    elseif result then
-        print("Artifact name query complete. Exiting co-routine.")
-        myThreadId = nil
+    
+    local currentCoroutine = CoroutinesQueue[1]
+    
+    if currentCoroutine ~= nil then
+        --print("Resuming artifact query")
+        local success, result = coroutine.resume(currentCoroutine)
+        if not success then
+            print("[BulkArtifactQuery] coroutine failed: "..tostring(result))
+            table.remove(CoroutinesQueue, 1)
+        elseif result then
+            print("[BulkArtifactQuery] coroutine complete.")
+            table.remove(CoroutinesQueue, 1)
+        end
     end
 end
 
-table.insert(Event.System.Update.End, {ReleaseTheKraken, "Indy", "ArtifactNameQuery"})
+table.insert(Event.System.Update.End, {BulkArtifactQuery, "Indy", "BulkArtifactQuery"})
