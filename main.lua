@@ -138,6 +138,16 @@ local function Initialize(addonName)
     Indy:ShowBagCheckButton()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
+    
+    -- ############### TEST CODE FOR BULK ARTIFACT QUERY ################
+    Indy:QueryItemDetails(Indy.artifactTable, function (tableOfItemDetails)
+        local itemCount = 0
+        for k,v in pairs(tableOfItemDetails) do
+            itemCount = itemCount + 1
+        end
+        print("Indy Artifact Table query completed, got "..itemCount.." items")
+    end)
+
 end
 
 local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)

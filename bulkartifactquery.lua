@@ -40,9 +40,6 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
                 success = true
             end
 
-            -- Increment item counter after we have determined success or failure so that itemCounter = successCounter + failCounter
-            itemCounter = itemCounter + 1
-
             -- Co routine check happens inside repeat because we might need to query same item multiple times until it succeeds
             loopCpuTime = Inspect.Time.Real() - loopCpuStartTime            
             if loopCpuTime > 0.01 then
@@ -51,6 +48,10 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
             end
 
         until success
+
+        -- Increment item counter after we have determined success or failure so that itemCounter = successCounter + failCounter
+        itemCounter = itemCounter + 1
+        
         
         if itemCounter % 100 == 0 then 
             print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems .. " Total CPUTime: " .. Inspect.Time.Real() - cpuStartTime)
@@ -58,7 +59,6 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
     end
 
     Indy.artifactTableCount = itemCounter
-    Indy.artifactCycleCount = cycleCounter
     Indy.failedItemQueries = failedItemQueries
     Indy.cpuTime = Inspect.Time.Real() - cpuStartTime
 
