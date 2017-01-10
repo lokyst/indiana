@@ -138,7 +138,7 @@ local function Initialize(addonName)
     Indy:ShowBagCheckButton()
 
     print("Indiana's Artifact Tracker loaded. Type /indy or /indy help for options.")
-    
+
 end
 
 local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
@@ -241,8 +241,7 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
 
     -- Check that AH Data is paged before processing
     if tableOfTypes.index and tableOfTypes.index >= 0 then
-        local tableOfAuctionsByChar = Indy:ProcessAHData(tableOfAuctions) -- *** PERFORMANCE WARNING *** --
-        Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar) -- *** PERFORMANCE WARNING *** --
+        Indy:TransformAHData(tableOfAuctions)
     end
 
 end
@@ -521,38 +520,52 @@ function Indy:CheckBagsForArtifacts()
 
 end
 
-function Indy:ProcessAHData(tableOfAuctions)
+function Indy:TransformAHData(tableOfAuctions)
     if not tableOfAuctions then
         return
     end
 
-    local cpuTimeStart = Inspect.Time.Real()
-
     local tableOfAuctionDetails = Inspect.Auction.Detail(tableOfAuctions)
-
     local itemId = ""
-    local itemDetails = {}
-    local artifactId = ""
-    local artifactName = ""
+    local tableOfItemIDs = {}
+
+    -- Create tableOfItemIDs for use with bulkArtifactQuery
+    for _, auctionDetails in pairs(tableOfAuctionDetails) do
+        itemId = auctionDetails.item
+        tableOfItemIDs[itemId] = itemId
+     end
+
+     local AHHandler = function (tableOfItemDetails)
+        Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
+     end
+
+    -- Call bulkArtifactQuerywith function to resume after completion
+    self:QueryItemDetails(tableOfItemIDs, AHHandler)
+end
+
+function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
+    local cpuTimeStart = Inspect.Time.Real()
     local charList = {}
     local tableOfAuctionsByChar = {}
     local auctionCount = 0
 
     for _, auctionDetails in pairs(tableOfAuctionDetails) do
         local auctionId = auctionDetails.id
-        itemId = auctionDetails.item
-        itemDetails = self:InspectItemDetail(itemId)
+        local itemId = auctionDetails.item
+        local itemDetails = tableOfItemDetails[itemId]
 
+        -- Add to the list of known artifacts if we do not already have this item
         CheckForUnknownItems({itemId})
 
         if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
+            local artifactId = ""
+            local artifactName = ""
             artifactId = itemDetails.type
             artifactName = itemDetails.name
 
             -- Return a list of chars who need this item
             charList = self:WhoNeedsItem(artifactId)
             tableOfAuctionsByChar[auctionId] = charList
-
         end
 
         auctionCount = auctionCount + 1
@@ -562,11 +575,12 @@ function Indy:ProcessAHData(tableOfAuctions)
     local cpuTimeAvg = cpuTimeElapsed / auctionCount
     print("ProcessAHData: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
 
+    Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
     return tableOfAuctionsByChar
 
 end
 
-function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
+function Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
     local auctionDetails = {}
     local itemId = ""
     local itemDetails = {}
@@ -577,16 +591,16 @@ function Indy:PrintAuctionsByChar(tableOfAuctions, tableOfAuctionsByChar)
     local cpuTimeStart = Inspect.Time.Real()
     local auctionCount = 0
 
-    for auctionId, _ in pairs(tableOfAuctionsByChar) do -- *** PERFORMANCE WARNING *** --
+    for auctionId, _ in pairs(tableOfAuctionsByChar) do
         auctionDetails = Inspect.Auction.Detail(auctionId)
         auctionBid = auctionDetails.bid
         auctionBuyout = auctionDetails.buyout
         itemId = auctionDetails.item
-        itemDetails = self:InspectItemDetail(itemId) -- *** PERFORMANCE WARNING *** --
+        itemDetails = tableOfItemDetails[itemId]
         artifactName = itemDetails.name
 
         local needList = {}
-        local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type) -- *** PERFORMANCE WARNING *** --
+        local charList, itemCounts, setCount = Indy:WhoNeedsItem(itemDetails.type)
         if #charList > 0 then
             if setCount == 0 then
                 setCount = "??"
