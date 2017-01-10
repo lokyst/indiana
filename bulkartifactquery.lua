@@ -5,7 +5,7 @@
 
 -- Using cputime as a limit for co-routine execution because we want to limit time used per frame to avoid stuttering.
 local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
-    print("Starting artifact name query")
+    --print("Starting artifact name query")
     local failedItemQueries = {}
     local tableOfItemDetails = {}
 
@@ -52,18 +52,18 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
         -- Increment item counter after we have determined success or failure so that itemCounter = successCounter + failCounter
         itemCounter = itemCounter + 1
         
-        
-        if itemCounter % 100 == 0 then 
-            print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems .. " Total CPUTime: " .. Inspect.Time.Real() - cpuStartTime)
-        end
+        -- Deubgging
+        --if itemCounter % 100 == 0 then 
+        --    print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems .. " Total CPUTime: " .. Inspect.Time.Real() - cpuStartTime)
+        --end
     end
 
     Indy.artifactTableCount = itemCounter
     Indy.failedItemQueries = failedItemQueries
     Indy.cpuTime = Inspect.Time.Real() - cpuStartTime
 
-    print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems)    
-    print("[BulkArtifactQuery] Query complete after " .. Indy.cpuTime .. " seconds")
+    --print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems)    
+    --print("[BulkArtifactQuery] Query complete after " .. Indy.cpuTime .. " seconds")
     
     completionFunc(tableOfItemDetails)
     
@@ -92,10 +92,10 @@ local function BulkArtifactQuery()
         --print("Resuming artifact query")
         local success, result = coroutine.resume(currentCoroutine)
         if not success then
-            print("[BulkArtifactQuery] coroutine failed: "..tostring(result))
+            --print("[BulkArtifactQuery] coroutine failed: "..tostring(result))
             table.remove(CoroutinesQueue, 1)
         elseif result then
-            print("[BulkArtifactQuery] coroutine complete.")
+            --print("[BulkArtifactQuery] coroutine complete.")
             table.remove(CoroutinesQueue, 1)
         end
     end
