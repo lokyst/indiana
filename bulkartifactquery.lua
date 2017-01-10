@@ -4,7 +4,7 @@
 -- Also, cannot use watchdog method if we need to query auction house or other post-start-up events.
 
 -- Using cputime as a limit for co-routine execution because we want to limit time used per frame to avoid stuttering.
-local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
+local function BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
     --print("Starting artifact name query")
     local failedItemQueries = {}
     local tableOfItemDetails = {}
@@ -21,7 +21,7 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
         local loopCpuTime
         
         repeat
-            success, itemDetail = pcall(Inspect.Item.Detail, itemId)
+            success, itemDetail = pcall(inspectionFunc, itemId)
 
             if success then
                 --Indy.newList[itemId].name =  itemDetail.name
@@ -72,9 +72,9 @@ end
 
 local CoroutinesQueue = {}
 
-function Indy:QueryItemDetails(tableOfItemIDs, completionFunc)
+function Indy:QueryItemDetails(tableOfItemIDs, inspectionFunc, completionFunc)
     local myThreadId = coroutine.create(function ()
-        return BulkArtifactQuery_Co(tableOfItemIDs, completionFunc)
+        return BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
     end)
     
     table.insert(CoroutinesQueue, myThreadId)

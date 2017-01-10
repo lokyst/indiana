@@ -240,7 +240,7 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
     --Indy.AHData = tableOfAuctions
 
     -- Check that AH Data is paged before processing
-    if tableOfTypes.index and tableOfTypes.index >= 0 then
+    if next(tableOfAuctions) ~= nil then
         Indy:TransformAHData(tableOfAuctions)
     end
 
@@ -521,29 +521,38 @@ function Indy:CheckBagsForArtifacts()
 end
 
 function Indy:TransformAHData(tableOfAuctions)
+    print("TransformAHData started")
     if not tableOfAuctions then
         return
     end
 
-    local tableOfAuctionDetails = Inspect.Auction.Detail(tableOfAuctions)
-    local itemId = ""
-    local tableOfItemIDs = {}
+    local AuctionHandler = function (tableOfAuctionDetails)
+        local itemId = ""
+        local tableOfItemIDs = {}
 
-    -- Create tableOfItemIDs for use with bulkArtifactQuery
-    for _, auctionDetails in pairs(tableOfAuctionDetails) do
-        itemId = auctionDetails.item
-        tableOfItemIDs[itemId] = itemId
-     end
+        -- Create tableOfItemIDs for use with bulkArtifactQuery
+        for _, auctionDetails in pairs(tableOfAuctionDetails) do
+            itemId = auctionDetails.item
+            tableOfItemIDs[itemId] = itemId
+         end
 
-     local AHHandler = function (tableOfItemDetails)
-        Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
-     end
+         local ItemHandler = function (tableOfItemDetails)
+            local status, err = pcall(Indy.ProcessAHData, self, tableOfItemDetails, tableOfAuctionDetails)
+            if not status then
+                print("ProcessAHData error: " .. err)
+            end
+         end
 
-    -- Call bulkArtifactQuerywith function to resume after completion
-    self:QueryItemDetails(tableOfItemIDs, AHHandler)
-end
+        -- Call bulkArtifactQuery with function to resume after completion
+        self:QueryItemDetails(tableOfItemIDs, Inspect.Item.Detail, ItemHandler)
+    end
+    
+    -- Call bulkQuery with function to resume after completion    
+    self:QueryItemDetails(tableOfAuctions, Inspect.Auction.Detail, AuctionHandler)
+ end
 
 function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
+    print("Processing Auction House Data")
     local cpuTimeStart = Inspect.Time.Real()
     local charList = {}
     local tableOfAuctionsByChar = {}
@@ -555,7 +564,7 @@ function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
         local itemDetails = tableOfItemDetails[itemId]
 
         -- Add to the list of known artifacts if we do not already have this item
-        CheckForUnknownItems({itemId})
+        CheckForUnknownItemsInItemDetailsTable({itemDetails})
 
         if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
             local artifactId = ""
