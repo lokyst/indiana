@@ -521,7 +521,7 @@ function Indy:CheckBagsForArtifacts()
 end
 
 function Indy:TransformAHData(tableOfAuctions)
-    print("TransformAHData started")
+    print("Transforming Auction House Data")
     if not tableOfAuctions then
         return
     end
@@ -537,23 +537,23 @@ function Indy:TransformAHData(tableOfAuctions)
          end
 
          local ItemHandler = function (tableOfItemDetails)
-            local status, err = pcall(Indy.ProcessAHData, self, tableOfItemDetails, tableOfAuctionDetails)
-            if not status then
-                print("ProcessAHData error: " .. err)
-            end
+            Indy_Co:AddToQueue(function()
+                return Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
+            end)
          end
 
         -- Call bulkArtifactQuery with function to resume after completion
-        self:QueryItemDetails(tableOfItemIDs, Inspect.Item.Detail, ItemHandler)
+        Indy_Co:QueryItemDetails(tableOfItemIDs, Inspect.Item.Detail, ItemHandler)
     end
-    
-    -- Call bulkQuery with function to resume after completion    
-    self:QueryItemDetails(tableOfAuctions, Inspect.Auction.Detail, AuctionHandler)
+
+    -- Call bulkQuery with function to resume after completion
+    Indy_Co:QueryItemDetails(tableOfAuctions, Inspect.Auction.Detail, AuctionHandler)
  end
 
 function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
     print("Processing Auction House Data")
     local cpuTimeStart = Inspect.Time.Real()
+    local loopCpuStartTime = Inspect.Time.Real()
     local charList = {}
     local tableOfAuctionsByChar = {}
     local auctionCount = 0
@@ -578,6 +578,9 @@ function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
         end
 
         auctionCount = auctionCount + 1
+
+        -- Check to see if we need to yield the coroutine to avoid performance warnings
+        loopCpuStartTime = Indy_Co:Yield(loopCpuStartTime)
     end
 
     local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
@@ -585,11 +588,11 @@ function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
     print("ProcessAHData: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
 
     Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
-    return tableOfAuctionsByChar
-
+    return true
 end
 
 function Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
+    local loopCpuStartTime = Inspect.Time.Real()
     local auctionDetails = {}
     local itemId = ""
     local itemDetails = {}
@@ -627,11 +630,16 @@ function Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
         end
 
         auctionCount = auctionCount + 1
+
+        -- Check to see if we need to yield the coroutine to avoid performance warnings
+        loopCpuStartTime = Indy_Co:Yield(loopCpuStartTime)
     end
 
     local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
     local cpuTimeAvg = cpuTimeElapsed / auctionCount
     print("PrintAuctionsByChar: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
+
+    return true
 end
 
 function Indy:SetTrackStatus(charName, bool)

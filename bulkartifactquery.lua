@@ -4,7 +4,11 @@
 -- Also, cannot use watchdog method if we need to query auction house or other post-start-up events.
 
 -- Using cputime as a limit for co-routine execution because we want to limit time used per frame to avoid stuttering.
-local function BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
+
+Indy_Co = {}
+local CoroutinesQueue = {}
+
+local function BulkDetailsQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
     --print("Starting artifact name query")
     local failedItemQueries = {}
     local tableOfItemDetails = {}
@@ -18,8 +22,7 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFu
     for itemId, _ in pairs(tableOfItemIDs) do
         local success
         local failCounter = 0
-        local loopCpuTime
-        
+
         repeat
             success, itemDetail = pcall(inspectionFunc, itemId)
 
@@ -41,19 +44,14 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFu
             end
 
             -- Co routine check happens inside repeat because we might need to query same item multiple times until it succeeds
-            loopCpuTime = Inspect.Time.Real() - loopCpuStartTime            
-            if loopCpuTime > 0.01 then
-                coroutine.yield(false)
-                loopCpuStartTime =  Inspect.Time.Real()
-            end
-
+            loopCpuStartTime = Indy_Co:Yield(loopCpuStartTime)
         until success
 
         -- Increment item counter after we have determined success or failure so that itemCounter = successCounter + failCounter
         itemCounter = itemCounter + 1
-        
+
         -- Deubgging
-        --if itemCounter % 100 == 0 then 
+        --if itemCounter % 100 == 0 then
         --    print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems .. " Total CPUTime: " .. Inspect.Time.Real() - cpuStartTime)
         --end
     end
@@ -62,43 +60,58 @@ local function BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFu
     Indy.failedItemQueries = failedItemQueries
     Indy.cpuTime = Inspect.Time.Real() - cpuStartTime
 
-    --print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems)    
+    --print("[BulkArtifactQuery] Items Processed: " .. itemCounter .. " Success: " .. succeededItems .. " Failed: " .. failedItems)
     --print("[BulkArtifactQuery] Query complete after " .. Indy.cpuTime .. " seconds")
-    
+
     completionFunc(tableOfItemDetails)
-    
+
     return true
 end
 
-local CoroutinesQueue = {}
-
-function Indy:QueryItemDetails(tableOfItemIDs, inspectionFunc, completionFunc)
-    local myThreadId = coroutine.create(function ()
-        return BulkArtifactQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
+function Indy_Co:QueryItemDetails(tableOfItemIDs, inspectionFunc, completionFunc)
+    Indy_Co:AddToQueue(function ()
+        return BulkDetailsQuery_Co(tableOfItemIDs, inspectionFunc, completionFunc)
     end)
-    
-    table.insert(CoroutinesQueue, myThreadId)
+end
+
+function Indy_Co:AddToQueue(cofunc)
+    local myThreadID = coroutine.create(cofunc)
+    --print("AddToQueue: " .. tostring(cofunc) .. " Adding thread: " .. tostring(myThreadID))
+
+    table.insert(CoroutinesQueue, myThreadID)
+    --print("CoroutinesQueue has " .. #CoroutinesQueue .. " entries")
+end
+
+function Indy_Co:Yield(loopCpuStartTime)
+    if Inspect.Time.Real() - loopCpuStartTime > 0.01 then
+        --print("Yielding")
+        coroutine.yield(false)
+        loopCpuStartTime =  Inspect.Time.Real()
+    end
+
+    return loopCpuStartTime
 end
 
 -- Release The Kraken!
-local function BulkArtifactQuery()
+local function CoroutineDispatcher()
     if #CoroutinesQueue == 0 then
         return
     end
-    
+    --print("Starting dispatcher. Coroutine Queue has " .. #CoroutinesQueue .. " items")
+
     local currentCoroutine = CoroutinesQueue[1]
-    
+
     if currentCoroutine ~= nil then
         --print("Resuming artifact query")
         local success, result = coroutine.resume(currentCoroutine)
         if not success then
-            --print("[BulkArtifactQuery] coroutine failed: "..tostring(result))
+            print("[CoroutineDispatcher] coroutine failed: "..tostring(result))
             table.remove(CoroutinesQueue, 1)
         elseif result then
-            --print("[BulkArtifactQuery] coroutine complete.")
+            --print("[CoroutineDispatcher] coroutine complete.")
             table.remove(CoroutinesQueue, 1)
         end
     end
 end
 
-table.insert(Event.System.Update.End, {BulkArtifactQuery, "Indy", "BulkArtifactQuery"})
+table.insert(Event.System.Update.End, {CoroutineDispatcher, "Indy", "CoroutineDispatcher"})
