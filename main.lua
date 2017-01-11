@@ -241,7 +241,9 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
 
     -- Check that AH Data is paged before processing
     if next(tableOfAuctions) ~= nil then
-        Indy:TransformAHData(tableOfAuctions)
+        if tableOfTypes.index and tableOfTypes.index >= 0 then
+            Indy:TransformAHData(tableOfAuctions)
+        end
     end
 
 end
