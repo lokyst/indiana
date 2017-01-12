@@ -37,23 +37,33 @@ local function ConstructSetsByIdTable()
 end
 
 local ITEM_CACHE = {}
-function Indy:InspectItemDetail(itemId)
-    -- Cache item data for repeat queries
-    local itemDetails
-    if ITEM_CACHE[itemId] then
-        itemDetails = ITEM_CACHE[itemId]
-    else
-        itemDetails = Inspect.Item.Detail(itemId)
+
+local function GetItemDetailFromCache(itemId)
+    -- use cached item data for repeat queries
+    return ITEM_CACHE[itemId]
+end
+
+local function AddItemDetailToCache(itemId, itemDetails)
+    if itemId and itemDetails then
         ITEM_CACHE[itemId] = itemDetails
+    end
+end
+
+local function InspectItemDetail(itemId)
+    -- Cache item data for repeat queries
+    local itemDetails = GetItemDetailFromCache(itemId)
+    if itemDetails == nil then
+        itemDetails = Inspect.Item.Detail(itemId)
+        AddItemDetailToCache(itemId, itemDetails)
     end
     return itemDetails
 end
 
-function Indy:InspectItemsDetails(tableOfItemIds)
+local function InspectItemsDetails(tableOfItemIds)
     local tableOfItemDetails = {}
 
     for _, id in ipairs(tableOfItemIds) do
-        tableOfItemDetails[id] = self:InspectItemDetail(id)
+        tableOfItemDetails[id] = InspectItemDetail(id)
     end
 
     return tableOfItemDetails
@@ -167,7 +177,7 @@ local function CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 end
 
 local function CheckForUnknownItems(tableOfItemIds)
-    local tableOfItemDetails = Indy:InspectItemsDetails(tableOfItemIds)
+    local tableOfItemDetails = InspectItemsDetails(tableOfItemIds)
 
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
 end
@@ -177,7 +187,7 @@ local function OnTooltipChange(ttType, ttShown, ttBuff)
     local artifactId
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = Indy:InspectItemDetail(ttShown)
+        itemDetails = InspectItemDetail(ttShown)
         if itemDetails then
             artifactId = itemDetails.type
         end
@@ -193,7 +203,7 @@ local function InspectTooltip()
     local ttType, ttShown = Inspect.Tooltip()
 
     if ttType and ttShown and (ttType == "itemtype" or ttType == "item") then
-        itemDetails = Indy:InspectItemDetail(ttShown)
+        itemDetails = InspectItemDetail(ttShown)
         if itemDetails then
             artifactId = itemDetails.type
         end
@@ -263,7 +273,7 @@ local function SlashHandler(arg)
 
         Indy:AddItemToChar(artifactId)
 
-        local itemDetails = Indy:InspectItemDetail(artifactId)
+        local itemDetails = InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has collected [" .. artifactName .. "]")
@@ -276,7 +286,7 @@ local function SlashHandler(arg)
 
         Indy:DeleteItemFromChar(artifactId)
 
-        local itemDetails = Indy:InspectItemDetail(artifactId)
+        local itemDetails = InspectItemDetail(artifactId)
         local artifactName = itemDetails.name
         Indy:UpdateTooltip()
         print(Indy.charName .. " has deleted [" .. artifactName .. "]")
@@ -489,7 +499,7 @@ function Indy:CheckBagsForArtifacts()
         end
     end
 
-    local tableOfItemDetails = self:InspectItemsDetails(tableOfItemIds)
+    local tableOfItemDetails = InspectItemsDetails(tableOfItemIds)
 
     --CheckForUnknownItems(itemIds)
     CheckForUnknownItemsInItemDetailsTable(tableOfItemDetails)
@@ -545,7 +555,7 @@ function Indy:TransformAHData(tableOfAuctions)
          end
 
         -- Call bulkArtifactQuery with function to resume after completion
-        Indy_Co:QueryItemDetails(tableOfItemIDs, Inspect.Item.Detail, ItemHandler)
+        Indy_Co:QueryItemDetails(tableOfItemIDs, InspectItemDetail, ItemHandler)
     end
 
     -- Call bulkQuery with function to resume after completion
