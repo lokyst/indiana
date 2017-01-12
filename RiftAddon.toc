@@ -18,7 +18,7 @@ RunOnStartup = {
     "tooltip.lua",
     "bagcheckbutton.lua",
     "setconversion.lua",
-	"bulkartifactquery.lua",
+	"Coroutines.lua",
 }
 
 SavedVariables = {
