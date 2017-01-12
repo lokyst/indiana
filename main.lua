@@ -252,7 +252,7 @@ local function OnAuctionScan(tableOfTypes, tableOfAuctions)
     -- Check that AH Data is paged before processing
     if next(tableOfAuctions) ~= nil then
         if tableOfTypes.index and tableOfTypes.index >= 0 then
-            Indy:TransformAHData(tableOfAuctions)
+            Indy:ProcessAHData(tableOfAuctions)
         end
     end
 
@@ -347,12 +347,6 @@ local function SlashHandler(arg)
 
     elseif cmd == "config" then
         Indy:ShowConfigWindow()
-
-    --elseif cmd == "processah" then
-    --    Indy:ProcessAHData(Indy.AHData)
-
-    --elseif cmd == "scanachievements" then
-    --    Indy:ScanAchievements(Indy.nextAchievementKey)
 
     elseif cmd == "help" then
         Indy:PrintHelp()
@@ -532,78 +526,7 @@ function Indy:CheckBagsForArtifacts()
 
 end
 
-function Indy:TransformAHData(tableOfAuctions)
-    print("Transforming Auction House Data")
-    if not tableOfAuctions then
-        return
-    end
-
-    local AuctionHandler = function (tableOfAuctionDetails)
-        local itemId = ""
-        local tableOfItemIDs = {}
-
-        -- Create tableOfItemIDs for use with bulkArtifactQuery
-        for _, auctionDetails in pairs(tableOfAuctionDetails) do
-            itemId = auctionDetails.item
-            tableOfItemIDs[itemId] = itemId
-         end
-
-         local ItemHandler = function (tableOfItemDetails)
-            Indy_Co:AddToQueue(function()
-                return Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
-            end)
-         end
-
-        -- Call bulkArtifactQuery with function to resume after completion
-        Indy_Co:QueryItemDetails(tableOfItemIDs, InspectItemDetail, ItemHandler)
-    end
-
-    -- Call bulkQuery with function to resume after completion
-    Indy_Co:QueryItemDetails(tableOfAuctions, Inspect.Auction.Detail, AuctionHandler)
- end
-
-function Indy:ProcessAHData(tableOfItemDetails, tableOfAuctionDetails)
-    print("Processing Auction House Data")
-    local cpuTimeStart = Inspect.Time.Real()
-    local loopCpuStartTime = Inspect.Time.Real()
-    local charList = {}
-    local tableOfAuctionsByChar = {}
-    local auctionCount = 0
-
-    for _, auctionDetails in pairs(tableOfAuctionDetails) do
-        local auctionId = auctionDetails.id
-        local itemId = auctionDetails.item
-        local itemDetails = tableOfItemDetails[itemId]
-
-        -- Add to the list of known artifacts if we do not already have this item
-        CheckForUnknownItemsInItemDetailsTable({itemDetails})
-
-        if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
-            local artifactId = ""
-            local artifactName = ""
-            artifactId = itemDetails.type
-            artifactName = itemDetails.name
-
-            -- Return a list of chars who need this item
-            charList = self:WhoNeedsItem(artifactId)
-            tableOfAuctionsByChar[auctionId] = charList
-        end
-
-        auctionCount = auctionCount + 1
-
-        -- Check to see if we need to yield the coroutine to avoid performance warnings
-        loopCpuStartTime = Indy_Co:Yield(loopCpuStartTime)
-    end
-
-    local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
-    local cpuTimeAvg = cpuTimeElapsed / auctionCount
-    print("ProcessAHData: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
-
-    Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
-    return true
-end
-
-function Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
+local function PrintAuctionsByChar_Co(tableOfAuctionsByChar, tableOfItemDetails)
     local loopCpuStartTime = Inspect.Time.Real()
     local auctionDetails = {}
     local itemId = ""
@@ -649,10 +572,80 @@ function Indy:PrintAuctionsByChar(tableOfAuctionsByChar, tableOfItemDetails)
 
     local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
     local cpuTimeAvg = cpuTimeElapsed / auctionCount
-    print("PrintAuctionsByChar: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
+    --print("PrintAuctionsByChar: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
 
     return true
 end
+
+local function ProcessAHData_Co(tableOfItemDetails, tableOfAuctionDetails)
+    local cpuTimeStart = Inspect.Time.Real()
+    local loopCpuStartTime = Inspect.Time.Real()
+    local charList = {}
+    local tableOfAuctionsByChar = {}
+    local auctionCount = 0
+
+    for _, auctionDetails in pairs(tableOfAuctionDetails) do
+        local auctionId = auctionDetails.id
+        local itemId = auctionDetails.item
+        local itemDetails = tableOfItemDetails[itemId]
+
+        -- Add to the list of known artifacts if we do not already have this item
+        CheckForUnknownItemsInItemDetailsTable({itemDetails})
+
+        if itemDetails.category and (itemDetails.category:find("collectible") or itemDetails.category:find("artifact")) then
+            local artifactId = ""
+            local artifactName = ""
+            artifactId = itemDetails.type
+            artifactName = itemDetails.name
+
+            -- Return a list of chars who need this item
+            charList = Indy:WhoNeedsItem(artifactId)
+            tableOfAuctionsByChar[auctionId] = charList
+        end
+
+        auctionCount = auctionCount + 1
+
+        -- Check to see if we need to yield the coroutine to avoid performance warnings
+        loopCpuStartTime = Indy_Co:Yield(loopCpuStartTime)
+    end
+
+    local cpuTimeElapsed = Inspect.Time.Real() - cpuTimeStart
+    local cpuTimeAvg = cpuTimeElapsed / auctionCount
+    --print("ProcessAHData: count="..auctionCount.." elapsed="..cpuTimeElapsed.." avg="..cpuTimeAvg)
+
+    PrintAuctionsByChar_Co(tableOfAuctionsByChar, tableOfItemDetails)
+    return true
+end
+
+function Indy:ProcessAHData(tableOfAuctions)
+    print("Processing Auction House Data")
+    if not tableOfAuctions then
+        return
+    end
+
+    local AuctionHandler = function (tableOfAuctionDetails)
+        local itemId = ""
+        local tableOfItemIDs = {}
+
+        -- Create tableOfItemIDs for use with bulkArtifactQuery
+        for _, auctionDetails in pairs(tableOfAuctionDetails) do
+            itemId = auctionDetails.item
+            tableOfItemIDs[itemId] = itemId
+         end
+
+         local ItemHandler = function (tableOfItemDetails)
+            Indy_Co:AddToQueue(function()
+                return ProcessAHData_Co(tableOfItemDetails, tableOfAuctionDetails)
+            end)
+         end
+
+        -- Call bulkArtifactQuery with function to resume after completion
+        Indy_Co:QueryItemDetails(tableOfItemIDs, InspectItemDetail, ItemHandler)
+    end
+
+    -- Call bulkQuery with function to resume after completion
+    Indy_Co:QueryItemDetails(tableOfAuctions, Inspect.Auction.Detail, AuctionHandler)
+ end
 
 function Indy:SetTrackStatus(charName, bool)
     if not charName then
